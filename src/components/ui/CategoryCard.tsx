@@ -1,10 +1,7 @@
-// src/components/ui/CategoryCard.tsx
-
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import type { Category } from "@/types/Category";
 
-// Mapping (à remplacer par l’API quand tu auras le champ description)
 const descriptions: Record<string, { subtitle: string; text: string }> = {
   SOC: {
     subtitle: "SOC – Surveillez, détectez, protégez !",
