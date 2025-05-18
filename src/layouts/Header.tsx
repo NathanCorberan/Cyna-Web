@@ -1,0 +1,105 @@
+import { useState } from "react";
+import { NavLink, useLocation } from "react-router-dom";
+import { Search, ShoppingCart, User, Menu } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { cn } from "@/lib/utils";
+
+export default function Header() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const location = useLocation();
+  const pathname = location.pathname;
+
+  return (
+    <header className="bg-[#302082] text-white w-full">
+      <div className="w-full px-4 py-2 flex items-center justify-between">
+        <NavLink to="/" className="font-bold text-xl">
+          cyna
+        </NavLink>
+
+        <div className="flex items-center space-x-2">
+          <div className="relative md:block">
+            <Input
+              type="search"
+              placeholder="Rechercher..."
+              className="h-8 w-64 rounded-sm bg-white text-black text-sm pl-2 pr-8"
+            />
+            <Search className="absolute right-2 top-1.5 h-4 w-4 text-gray-500" />
+          </div>
+
+          <NavLink to="/cart" className="p-1">
+            <ShoppingCart className="h-5 w-5" />
+          </NavLink>
+
+          <NavLink to="/account" className="p-1">
+            <User className="h-5 w-5" />
+          </NavLink>
+
+          <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="p-1">
+                <Menu className="h-5 w-5" />
+              </Button>
+
+            </SheetTrigger>
+            <SheetContent side="right" className="bg-[#302082] text-white p-0 w-[200px]">
+              <div className="flex items-center justify-between px-4 py-2">
+                <span className="text-3xl font-bold">Menu</span>
+              </div>
+              <hr className="mb-2 border-white/50 mx-6" />
+              <nav className="flex flex-col">
+                <NavLink to="/categories"
+                  className={cn(
+                    "px-4 py-3 hover:bg-[#3a2a9d] transition-colors",
+                    pathname === "/categories" && "bg-[#3a2a9d]",
+                  )}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Catégories
+                </NavLink>
+                <NavLink to="/nouveautes"
+                  className={cn(
+                    "px-4 py-3 hover:bg-[#3a2a9d] transition-colors",
+                    pathname === "/nouveautes" && "bg-[#3a2a9d]",
+                  )}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Nouveautés
+                </NavLink>
+                <NavLink to="/produits"
+                  className={cn(
+                    "px-4 py-3 hover:bg-[#3a2a9d] transition-colors",
+                    pathname === "/produits" && "bg-[#3a2a9d]",
+                  )}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Produits
+                </NavLink>
+                <NavLink to="/mon-panier"
+                  className={cn(
+                    "px-4 py-3 hover:bg-[#3a2a9d] transition-colors",
+                    pathname === "/mon-panier" && "bg-[#3a2a9d]",
+                  )}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Mon panier
+                </NavLink>
+                <NavLink to="/checkout"
+                  className={cn(
+                    "px-4 py-3 hover:bg-[#3a2a9d] transition-colors",
+                    pathname === "/checkout" && "bg-[#3a2a9d]",
+                  )}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Checkout
+                </NavLink>
+              </nav>
+            </SheetContent>
+          </Sheet>
+        </div>
+      </div>
+    </header>
+  );
+}
