@@ -1,54 +1,86 @@
-# React + TypeScript + Vite
+# nathancorberan-projet_cyna_web
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Description
+**nathancorberan-projet_cyna_web** est une application web e-commerce développée avec **React** et **Vite.js**. Elle permet aux utilisateurs d'acheter et gérer des abonnements aux solutions de sécurité SaaS proposées par Cyna. L'objectif du projet est d'offrir une expérience fluide et sécurisée pour les utilisateurs, ainsi qu'un back-office performant pour la gestion des produits et commandes.
 
-Currently, two official plugins are available:
+## Prérequis
+Avant d'installer et d'exécuter ce projet, assurez-vous d'avoir les outils suivants installés :
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- [Node.js](https://nodejs.org/) (version 18) et npm
+- [Git](https://git-scm.com/)
 
-## Expanding the ESLint configuration
+## Installation
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+### 1. Cloner le dépôt
+```sh
+git clone https://github.com/NathanCorberan/Projet_Cyna_Web.git
+cd projet_cyna_web
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+### 2. Installer les dépendances
+```sh
+npm install
 ```
+
+### 3. Configuration de l'environnement
+Créez un fichier `.env` à la racine du projet et ajoutez-y les variables d'environnement nécessaires (ex: URL de l'API backend).
+
+### 4. Lancer l'application
+```sh
+npm run dev
+```
+L'application sera accessible via `http://localhost:5173/`.
+
+## Fonctionnalités principales
+- **Plateforme e-commerce** sécurisée avec gestion du panier et paiement en ligne
+- **Expérience mobile-first** optimisée
+- **Authentification et gestion des utilisateurs**
+- **Back-office** pour l'administration des produits, commandes et clients
+- **Recherche avancée** avec filtres et tri
+- **Gestion des abonnements**
+- **Assistance utilisateur** avec chatbot et formulaire de contact
+
+## Structure du projet
+Le projet suit une architecture modulaire :
+
+- **`src/`** : Code source principal
+  - **`components/`** : Composants réutilisables (ex: `Carousel.jsx`)
+  - **`pages/`** : Pages principales de l'application (connexion, accueil, produits, panier, etc.)
+  - **`styles/`** : Fichiers CSS
+  - **`assets/`** : Images et autres ressources statiques
+- **`public/`** : Contenu statique
+- **`package.json`** : Fichier de configuration npm
+- **`vite.config.js`** : Configuration Vite.js
+
+## API et Intégration Backend
+L'application communique avec une API REST développée en Symfony.
+Quelques endpoints utiles :
+- `GET /api/products` → Liste des produits
+- `POST /api/login_check` → Authentification JWT
+- `POST /api/orders` → Création de commande
+
+## Tests
+Pour exécuter les tests :
+```sh
+npm test
+```
+
+## Déploiement
+### 1. Construire l'application pour la production
+```sh
+npm install
+npm run build
+```
+Le projet sera compilé et les fichiers de production seront placés dans le dossier `dist/`.
+
+### 2. Déploiement sur un serveur web (Ex: Vercel, Netlify, OVH...)
+Hébergez les fichiers générés dans `dist/` sur votre serveur.
+
+## Auteurs
+- **Nathan Corberan** - Développement principal
+- **Joris Lecharpentier** - Contributions backend et sécurité
+- **Noah Barreau** - Expérience utilisateur et intégration API
+- **Liova Hovakimyan** - Développement front-end
+
+## Conclusion
+Ce projet a été un excellent exercice de mise en pratique de nos compétences en développement web et en gestion de projet. Nous espérons que cette plateforme répondra aux attentes de l'entreprise Cyna et de ses clients.

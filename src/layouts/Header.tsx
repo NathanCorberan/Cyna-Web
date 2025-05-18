@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 
+import cynaLogo from "@/assets/Cyna_logo.png";
+
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
@@ -15,8 +17,8 @@ export default function Header() {
   return (
     <header className="bg-[#302082] text-white w-full">
       <div className="w-full px-4 py-2 flex items-center justify-between">
-        <NavLink to="/" className="font-bold text-xl">
-          cyna
+        <NavLink to="/" className="flex items-center h-10">
+          <img src={cynaLogo} alt="Cyna Logo" className="h-10 w-auto" />
         </NavLink>
 
         <div className="flex items-center space-x-2">
