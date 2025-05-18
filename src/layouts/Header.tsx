@@ -1,18 +1,37 @@
-import { useState } from "react";
-import { NavLink, useLocation } from "react-router-dom";
-import { Search, ShoppingCart, User, Menu } from "lucide-react";
+import { useState, useEffect } from "react";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { Search, ShoppingCart, User, Menu, LogOut } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { cn } from "@/lib/utils";
+import { cn, isAuthenticated, logout } from "@/lib/utils";
 
 import cynaLogo from "@/assets/Cyna_logo.png";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [auth, setAuth] = useState(isAuthenticated());
   const location = useLocation();
+  const navigate = useNavigate();
   const pathname = location.pathname;
+
+  useEffect(() => {
+    const handleStorage = () => setAuth(isAuthenticated());
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
+
+  useEffect(() => {
+    setAuth(isAuthenticated());
+  }, [location]);
+
+  const handleLogout = () => {
+    logout();
+    setAuth(false);
+    setIsMenuOpen(false); // ferme le menu latéral si ouvert
+    navigate("/login");
+  };
 
   return (
     <header className="bg-[#302082] text-white w-full">
@@ -35,16 +54,24 @@ export default function Header() {
             <ShoppingCart className="h-5 w-5" />
           </NavLink>
 
-          <NavLink to="/account" className="p-1">
-            <User className="h-5 w-5" />
-          </NavLink>
+          {/* Affiche le bon lien selon connexion */}
+          {auth ? (
+            <>
+              <NavLink to="/account" className="p-1">
+                <User className="h-5 w-5" />
+              </NavLink>
+            </>
+          ) : (
+            <NavLink to="/login" className="p-1">
+              <User className="h-5 w-5" />
+            </NavLink>
+          )}
 
           <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="p-1">
                 <Menu className="h-5 w-5" />
               </Button>
-
             </SheetTrigger>
             <SheetContent side="right" className="bg-[#302082] text-white p-0 w-[200px]">
               <div className="flex items-center justify-between px-4 py-2">
@@ -61,15 +88,6 @@ export default function Header() {
                 >
                   Catégories
                 </NavLink>
-                <NavLink to="/nouveautes"
-                  className={cn(
-                    "px-4 py-3 hover:bg-[#3a2a9d] transition-colors",
-                    pathname === "/nouveautes" && "bg-[#3a2a9d]",
-                  )}
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Nouveautés
-                </NavLink>
                 <NavLink to="/produits"
                   className={cn(
                     "px-4 py-3 hover:bg-[#3a2a9d] transition-colors",
@@ -79,15 +97,6 @@ export default function Header() {
                 >
                   Produits
                 </NavLink>
-                <NavLink to="/mon-panier"
-                  className={cn(
-                    "px-4 py-3 hover:bg-[#3a2a9d] transition-colors",
-                    pathname === "/mon-panier" && "bg-[#3a2a9d]",
-                  )}
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Mon panier
-                </NavLink>
                 <NavLink to="/checkout"
                   className={cn(
                     "px-4 py-3 hover:bg-[#3a2a9d] transition-colors",
@@ -95,8 +104,17 @@ export default function Header() {
                   )}
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  Checkout
+                  Commandes
                 </NavLink>
+                {/* Bouton Logout dans le menu latéral si connecté */}
+                {auth && (
+                  <button
+                    onClick={handleLogout}
+                    className="px-4 py-3 hover:bg-[#3a2a9d] text-left transition-colors flex items-center"
+                  >
+                    <LogOut className="h-5 w-5 mr-2" /> Se déconnecter
+                  </button>
+                )}
               </nav>
             </SheetContent>
           </Sheet>
