@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Eye, EyeOff, Facebook } from "lucide-react";
-import { useRegister } from "@/hooks/useRegister";
+import { useRegister } from "@/hooks/auth/useRegister";
 import type { RegisterCredentials } from "@/types/Register";
 
 export const Register = () => {

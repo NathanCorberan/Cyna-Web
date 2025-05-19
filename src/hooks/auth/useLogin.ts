@@ -1,7 +1,7 @@
 // src/hooks/useLogin.ts
 
 import { useState } from "react";
-import { login } from "@/lib/auth";
+import { login } from "@/features/account/api/auth";
 import type { LoginCredentials } from "@/types/Login";
 
 export function useLogin() {

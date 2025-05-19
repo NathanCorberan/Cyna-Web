@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useCategories } from "@/hooks/useCategories";
+import { useCategories } from "@/hooks/categories/useCategories";
 import { CategoriesGrid } from "@/features/categories/components/CategoriesGrid";
 import { CategoriesGridSkeleton } from "@/features/categories/components/CategoriesGridSkeleton";
 

@@ -29,9 +29,8 @@ export async function register(credentials: RegisterCredentials): Promise<Regist
 
 const API_URL = import.meta.env.VITE_API_URL + 'users';
 
-  // Ajoute isActivate: true si non précisé
   const payload = { ...credentials, isActivate: credentials.isActivate ?? true };
-  const res = await fetch(API_URL + "register", {
+  const res = await fetch(API_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

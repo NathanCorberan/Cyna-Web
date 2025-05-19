@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { RegisterCredentials } from "@/types/Register";
-import { register as registerApi } from "@/lib/auth";
+import { register as registerApi } from "@/features/account/api/auth";
 
 export function useRegister() {
   const [loading, setLoading] = useState(false);
