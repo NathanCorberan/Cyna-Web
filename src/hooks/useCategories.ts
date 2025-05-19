@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { fetchCategories } from '@/lib/fetchCategories';
+import { fetchCategories } from '@/features/categories/api/fetchCategories';
 import type { Category } from '@/types/Category';
 
 export function useCategories() {

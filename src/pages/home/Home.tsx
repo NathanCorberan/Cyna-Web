@@ -2,8 +2,8 @@ import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCategories } from "@/hooks/useCategories";
-import { CategoriesGrid } from "@/components/ui/CategoriesGrid";
-import { CategoriesGridSkeleton } from "@/components/ui/CategoriesGridSkeleton";
+import { CategoriesGrid } from "@/features/categories/components/CategoriesGrid";
+import { CategoriesGridSkeleton } from "@/features/categories/components/CategoriesGridSkeleton";
 
 // (optionnel) : Pour un skeleton shadcn, tu peux ajouter import { Skeleton } from "@/components/ui/skeleton";
 
