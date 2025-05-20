@@ -7,6 +7,8 @@ import { CategoriesGrid } from "@/features/categories/components/CategoriesGrid"
 import { CategoriesGridSkeleton } from "@/features/categories/components/CategoriesGridSkeleton";
 import placeholder from "@/assets/placeholder.png";
 import { useCarousels } from "@/hooks/carousel/useCarousel";
+import { useTopProducts } from "@/hooks/products/useTopProducts";
+
 
 export const Home = () => {
   const { categories, loading, error } = useCategories();
