@@ -2,7 +2,7 @@ import type { RouteObject } from "react-router-dom";
 import { Home } from "@/pages/home/Home";
 import { Login } from "@/pages/account/login/Login";
 import { Register } from "@/pages/account/register/Register";
-import { GuestRoute } from "@/features/account/components/GuestRoute";
+import { GuestRoute, GuestRouteNotLog } from "@/features/account/components/GuestRoute";
 import { Profile } from "@/pages/account/profile/Profile";
 
 export const routes: RouteObject[] = [
@@ -24,6 +24,10 @@ export const routes: RouteObject[] = [
   },
   {
     path: "/account",
-    element: <Profile />,
+    element: (
+      <GuestRouteNotLog>
+        <Profile />
+      </GuestRouteNotLog>
+    ),
   },
 ];

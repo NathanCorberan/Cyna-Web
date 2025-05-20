@@ -9,17 +9,15 @@ import placeholder from "@/assets/placeholder.png";
 import { useCarousels } from "@/hooks/carousel/useCarousel";
 import { useTopProducts } from "@/hooks/products/useTopProducts";
 
-
 export const Home = () => {
   const { categories, loading, error } = useCategories();
   const { carousels, loading: loadingCarousels, error: errorCarousels } = useCarousels();
+  const { products: topProducts, loading: loadingTopProducts, error: errorTopProducts } = useTopProducts();
   const [activePanel, setActivePanel] = useState(0);
 
   const sortedCarousels = (carousels || []).slice().sort((a, b) => a.panel_order - b.panel_order);
-
   const currentCarousel = sortedCarousels[activePanel] || null;
   const frLang = currentCarousel?.carouselLangages?.find((lang) => lang.code === "FR");
-
   const panelsCount = sortedCarousels.length;
 
   const goLeft = () => setActivePanel((prev) => (prev - 1 + panelsCount) % panelsCount);
@@ -123,7 +121,6 @@ export const Home = () => {
               </Link>
             </div>
           </div>
-
           <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow">
             <div className="relative h-48">
               <img
@@ -144,7 +141,6 @@ export const Home = () => {
               </Link>
             </div>
           </div>
-
           <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow">
             <div className="relative h-48">
               <img
@@ -178,24 +174,62 @@ export const Home = () => {
 
       <div className="w-full mb-10">
         <h2 className="text-xl font-bold mb-4">Top du moment</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6 md:gap-8">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <Link to={`/produit-${i + 1}`} key={i}>
-              <div className="border rounded-xl p-4 hover:shadow-lg transition-shadow bg-white flex flex-col items-center">
-                <div className="aspect-square bg-gray-100 w-full mb-4 flex items-center justify-center overflow-hidden rounded-lg max-w-xs">
-                  <img
-                    src={placeholder + "?height=300&width=300"}
-                    alt={`Produit ${i + 1}`}
-                    className="object-cover w-full h-full"
-                  />
-                </div>
-                <div className="text-center">
-                  <div className="font-medium text-base">Produit {i + 1}</div>
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
+        {loadingTopProducts ? (
+          <div className="text-center text-gray-500">Chargement des produits...</div>
+        ) : errorTopProducts ? (
+          <div className="text-destructive text-center mb-6">{errorTopProducts}</div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6 md:gap-8">
+            {topProducts.map((product) => {
+              const frLang =
+                product.productLangages?.find((lang) => lang.code === "FR") ||
+                product.productLangages?.[0];
+              const image =
+                product.productImages && product.productImages.length > 0
+                  ? product.productImages[0].image_link.startsWith("http")
+                    ? product.productImages[0].image_link
+                    : "https://" + product.productImages[0].image_link
+                  : placeholder;
+              const minPriceObj =
+                product.subscriptionTypes &&
+                product.subscriptionTypes.reduce(
+                  (prev, curr) =>
+                    parseFloat(curr.price.replace(/[^\d.]/g, "")) <
+                    parseFloat(prev.price.replace(/[^\d.]/g, ""))
+                      ? curr
+                      : prev,
+                  product.subscriptionTypes[0]
+                );
+              return (
+                <Link to={`/produit/${product.id}`} key={product.id}>
+                  <div className="border rounded-xl p-4 hover:shadow-lg transition-shadow bg-white flex flex-col items-center h-full">
+                    <div className="aspect-square bg-gray-100 w-full mb-4 flex items-center justify-center overflow-hidden rounded-lg max-w-xs">
+                      <img
+                        src={image}
+                        alt={frLang?.name || `Produit ${product.id}`}
+                        className="object-cover w-full h-full"
+                      />
+                    </div>
+                    <div className="text-center flex flex-col gap-1">
+                      <div className="font-medium text-base">
+                        {frLang?.name || `Produit ${product.id}`}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        {product.category_name}
+                      </div>
+                      <div className="text-sm font-semibold text-[#302082]">
+                        {minPriceObj ? minPriceObj.price : ""}
+                      </div>
+                      <div className="text-xs text-gray-600 line-clamp-2">
+                        {frLang?.description}
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );
