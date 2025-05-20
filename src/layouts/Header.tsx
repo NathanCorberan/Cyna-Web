@@ -45,9 +45,9 @@ export default function Header() {
             <Input
               type="search"
               placeholder="Rechercher..."
-              className="h-8 w-64 rounded-sm bg-white text-black text-sm pl-2 pr-8"
+              className="h-8 w-64 rounded-sm bg-white text-white text-sm pl-2 pr-8"
             />
-            <Search className="absolute right-2 top-1.5 h-4 w-4 text-gray-500" />
+            <Search className="absolute right-2 top-1.5 h-4 w-4 text-white-500" />
           </div>
 
           <NavLink to="/cart" className="p-1">

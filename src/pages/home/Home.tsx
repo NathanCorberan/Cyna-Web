@@ -1,48 +1,171 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCategories } from "@/hooks/categories/useCategories";
 import { CategoriesGrid } from "@/features/categories/components/CategoriesGrid";
 import { CategoriesGridSkeleton } from "@/features/categories/components/CategoriesGridSkeleton";
-
-// (optionnel) : Pour un skeleton shadcn, tu peux ajouter import { Skeleton } from "@/components/ui/skeleton";
+import placeholder from "@/assets/placeholder.png";
+import { useCarousels } from "@/hooks/carousel/useCarousel";
 
 export const Home = () => {
   const { categories, loading, error } = useCategories();
+  const { carousels, loading: loadingCarousels, error: errorCarousels } = useCarousels();
+  const [activePanel, setActivePanel] = useState(0);
+
+  const sortedCarousels = (carousels || []).slice().sort((a, b) => a.panel_order - b.panel_order);
+
+  const currentCarousel = sortedCarousels[activePanel] || null;
+  const frLang = currentCarousel?.carouselLangages?.find((lang) => lang.code === "FR");
+
+  const panelsCount = sortedCarousels.length;
+
+  const goLeft = () => setActivePanel((prev) => (prev - 1 + panelsCount) % panelsCount);
+  const goRight = () => setActivePanel((prev) => (prev + 1) % panelsCount);
 
   return (
     <div className="w-full px-2 sm:px-6 py-8">
       <div className="relative w-full h-[180px] sm:h-[260px] md:h-[320px] lg:h-[380px] rounded-lg overflow-hidden mb-10">
-        <img
-          src="/placeholder.svg?height=380&width=1400"
-          alt="Banner"
-          className="object-cover w-full h-full"
-        />
-
-        <div className="absolute inset-0 flex items-center justify-between px-4 z-10">
-          <Button variant="ghost" size="icon" className="bg-white/20 backdrop-blur-sm rounded-full">
-            <ChevronLeft className="h-6 w-6" />
-          </Button>
-          <Button variant="ghost" size="icon" className="bg-white/20 backdrop-blur-sm rounded-full">
-            <ChevronRight className="h-6 w-6" />
-          </Button>
-        </div>
-
-        <div className="flex justify-center space-x-2 absolute bottom-4 left-0 right-0 z-10">
-          {[1, 2, 3].map((_, i) => (
-            <div key={i} className={`h-2 w-8 rounded-full ${i === 0 ? "bg-[#302082]" : "bg-gray-300"}`} />
-          ))}
-        </div>
-
-        <div className="absolute bottom-8 left-8 text-white z-10">
-          <h2 className="text-2xl font-bold text-orange-400">Nom catégorie 1</h2>
-          <p className="text-lg">Description catégorie 1</p>
-        </div>
-
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/30 pointer-events-none" />
+        {loadingCarousels ? (
+          <div className="flex items-center justify-center w-full h-full bg-gray-100">
+            Chargement du carrousel...
+          </div>
+        ) : errorCarousels ? (
+          <div className="flex items-center justify-center w-full h-full bg-red-50 text-red-600">
+            {errorCarousels}
+          </div>
+        ) : panelsCount > 0 ? (
+          <>
+            <img
+              src={currentCarousel?.image_link || placeholder}
+              alt={frLang?.title || "Banner"}
+              className="object-cover w-full h-full"
+            />
+            <div className="absolute inset-0 flex items-center justify-between px-4 z-10">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="bg-white/20 backdrop-blur-sm rounded-full"
+                onClick={goLeft}
+                aria-label="Slide précédente"
+              >
+                <ChevronLeft className="h-6 w-6" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="bg-white/20 backdrop-blur-sm rounded-full"
+                onClick={goRight}
+                aria-label="Slide suivante"
+              >
+                <ChevronRight className="h-6 w-6" />
+              </Button>
+            </div>
+            <div className="flex justify-center space-x-2 absolute bottom-4 left-0 right-0 z-10">
+              {sortedCarousels.map((_, i) => (
+                <button
+                  key={i}
+                  className={`h-2 w-8 rounded-full transition-colors ${
+                    i === activePanel ? "bg-[#302082]" : "bg-gray-300"
+                  }`}
+                  aria-label={`Aller au slide ${i + 1}`}
+                  onClick={() => setActivePanel(i)}
+                />
+              ))}
+            </div>
+            <div className="absolute bottom-8 left-8 text-white z-10">
+              <h2 className="text-2xl font-bold text-orange-400">
+                {frLang?.title || "Titre indisponible"}
+              </h2>
+              <p className="text-lg">{frLang?.description || "Description indisponible"}</p>
+            </div>
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/30 pointer-events-none" />
+          </>
+        ) : (
+          <>
+            <img
+              src={placeholder}
+              alt="Banner"
+              className="object-cover w-full h-full"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/30 pointer-events-none" />
+          </>
+        )}
       </div>
 
-      {/* Section Catégories */}
+      <div className="mb-12">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold text-[#302082]">Nouveautés</h2>
+          <Link to="/nouveautes" className="text-[#302082] flex items-center hover:underline">
+            Voir tout <ArrowRight className="ml-1 h-4 w-4" />
+          </Link>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow">
+            <div className="relative h-48">
+              <img
+                src={placeholder + "?height=200&width=400&text=Nouveauté+1"}
+                alt="Nouveauté 1"
+                className="object-cover w-full h-full absolute inset-0"
+              />
+              <div className="absolute top-2 left-2 bg-[#302082] text-white text-xs px-2 py-1 rounded">NOUVEAU</div>
+            </div>
+            <div className="p-4">
+              <div className="text-sm text-gray-500 mb-1">12 Mai 2025</div>
+              <h3 className="font-bold text-lg mb-2">Collection Été 2025</h3>
+              <p className="text-gray-600 text-sm mb-3">
+                Découvrez notre nouvelle collection été avec des designs exclusifs et des matières premium.
+              </p>
+              <Link to="/collection-ete-2025" className="text-[#302082] text-sm font-medium hover:underline">
+                Découvrir la collection
+              </Link>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow">
+            <div className="relative h-48">
+              <img
+                src={placeholder + "?height=200&width=400&text=Nouveauté+2"}
+                alt="Nouveauté 2"
+                className="object-cover w-full h-full absolute inset-0"
+              />
+              <div className="absolute top-2 left-2 bg-orange-500 text-white text-xs px-2 py-1 rounded">TENDANCE</div>
+            </div>
+            <div className="p-4">
+              <div className="text-sm text-gray-500 mb-1">8 Mai 2025</div>
+              <h3 className="font-bold text-lg mb-2">Accessoires Urbains</h3>
+              <p className="text-gray-600 text-sm mb-3">
+                Notre nouvelle gamme d'accessoires urbains pour compléter votre style quotidien.
+              </p>
+              <Link to="/accessoires-urbains" className="text-[#302082] text-sm font-medium hover:underline">
+                Explorer la gamme
+              </Link>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow">
+            <div className="relative h-48">
+              <img
+                src={placeholder + "?height=200&width=400&text=Nouveauté+3"}
+                alt="Nouveauté 3"
+                className="object-cover w-full h-full absolute inset-0"
+              />
+              <div className="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded">ÉCORESPONSABLE</div>
+            </div>
+            <div className="p-4">
+              <div className="text-sm text-gray-500 mb-1">5 Mai 2025</div>
+              <h3 className="font-bold text-lg mb-2">Collection Éco-Friendly</h3>
+              <p className="text-gray-600 text-sm mb-3">
+                Des vêtements durables fabriqués à partir de matériaux recyclés et écoresponsables.
+              </p>
+              <Link to="/eco-friendly" className="text-[#302082] text-sm font-medium hover:underline">
+                Voir la collection
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {loading ? (
         <CategoriesGridSkeleton />
       ) : error ? (
@@ -50,7 +173,6 @@ export const Home = () => {
       ) : (
         <CategoriesGrid categories={categories} />
       )}
-
 
       <div className="w-full mb-10">
         <h2 className="text-xl font-bold mb-4">Top du moment</h2>
@@ -60,7 +182,7 @@ export const Home = () => {
               <div className="border rounded-xl p-4 hover:shadow-lg transition-shadow bg-white flex flex-col items-center">
                 <div className="aspect-square bg-gray-100 w-full mb-4 flex items-center justify-center overflow-hidden rounded-lg max-w-xs">
                   <img
-                    src="/placeholder.svg?height=300&width=300"
+                    src={placeholder + "?height=300&width=300"}
                     alt={`Produit ${i + 1}`}
                     className="object-cover w-full h-full"
                   />
