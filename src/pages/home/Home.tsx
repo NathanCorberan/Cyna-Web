@@ -202,7 +202,7 @@ export const Home = () => {
                 );
               return (
                 <Link to={`/produit/${product.id}`} key={product.id}>
-                  <div className="border rounded-xl p-4 hover:shadow-lg transition-shadow bg-white flex flex-col items-center h-full">
+                  <div className="hover:shadow-lg transition-all p-4 h-full flex flex-col items-center justify-center rounded-2xl border border-muted bg-white">
                     <div className="aspect-square bg-gray-100 w-full mb-4 flex items-center justify-center overflow-hidden rounded-lg max-w-xs">
                       <img
                         src={image}

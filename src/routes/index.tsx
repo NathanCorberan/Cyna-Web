@@ -4,6 +4,7 @@ import { Login } from "@/pages/account/login/Login";
 import { Register } from "@/pages/account/register/Register";
 import { GuestRoute, GuestRouteNotLog } from "@/features/account/components/GuestRoute";
 import { Profile } from "@/pages/account/profile/Profile";
+import { Cart } from "@/pages/cart/Cart";
 
 export const routes: RouteObject[] = [
   {
@@ -30,4 +31,10 @@ export const routes: RouteObject[] = [
       </GuestRouteNotLog>
     ),
   },
+  {
+    path: "/cart",
+    element: <Cart />,
+  },
 ];
+
+
