@@ -1,7 +1,10 @@
+// src/features/categories/components/CategoryCard.tsx
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import type { Category } from "@/types/Category";
 
+// Optionnel : descriptions custom pour chaque nom de catégorie (exemple)
 const descriptions: Record<string, { subtitle: string; text: string }> = {
   SOC: {
     subtitle: "SOC – Surveillez, détectez, protégez !",
@@ -22,16 +25,24 @@ interface CategoryCardProps {
 }
 
 export function CategoryCard({ category }: CategoryCardProps) {
+  // Fallback pour l'image (évite les liens sans http)
+  const getImageUrl = (link: string) =>
+    link.startsWith("http") ? link : `https://${link}`;
+
   const { subtitle, text } = descriptions[category.name] ?? {
     subtitle: category.name,
     text: "",
   };
 
-  const getImageUrl = (link: string) =>
-    link.startsWith("http") ? link : `https://${link}`;
-
   return (
-    <Link to={`/categorie-${category.id}`} className="block h-full">
+    <Link
+      to={`/categorie/${category.id}`}
+      state={{
+        image: getImageUrl(category.imageLink),
+        name: category.name,
+      }}
+      className="block h-full"
+    >
       <Card className="hover:shadow-lg transition-all h-full flex flex-col items-center justify-center rounded-2xl border border-muted bg-white">
         <CardContent className="flex flex-col items-center text-center gap-4 py-8 px-6">
           <img
