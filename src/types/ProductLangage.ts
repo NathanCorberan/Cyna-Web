@@ -3,8 +3,8 @@ export interface ProductLangage {
   "@id": string;
   "@type": string;
   id: number;
-  code: string; // ex: 'FR'
+  code: string;
   name: string;
   description: string;
-  product: string; // /api/products/1
+  product: string;
 }

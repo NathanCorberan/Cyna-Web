@@ -4,8 +4,9 @@ import { Login } from "@/pages/account/login/Login";
 import { Register } from "@/pages/account/register/Register";
 import { GuestRoute, GuestRouteNotLog } from "@/features/account/components/GuestRoute";
 import { Profile } from "@/pages/account/profile/Profile";
-import { Produit } from "@/pages/produits/Produits";
+import { ProduitsByCategories } from "@/pages/produits/ProduitsByCategories";
 import { Cart } from "@/pages/cart/Cart";
+import { AllProducts } from "@/pages/produits/AllProducts"
 
 export const routes: RouteObject[] = [
   {
@@ -38,7 +39,11 @@ export const routes: RouteObject[] = [
   },
   {
     path: "/categorie/:id",
-    element: <Produit />,
+    element: <ProduitsByCategories />,
+  },
+  {
+    path: "/produits",
+    element: <AllProducts />,
   },
 ];
 

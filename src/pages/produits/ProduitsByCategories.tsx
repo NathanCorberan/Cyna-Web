@@ -5,26 +5,26 @@ import placeholder from "@/assets/placeholder.png";
 import { useProductsByCategory } from "@/hooks/products/useProductsByCategory";
 import { useCategoryId } from "@/hooks/categories/useCategoryId";
 
-export const Produit = () => {
+// Fonction pour sécuriser la récupération d’une image (catégorie ou produit)
+const getImageUrl = (link?: string) =>
+  link
+    ? link.startsWith("http")
+      ? link
+      : `https://${link}`
+    : placeholder;
+
+export const ProduitsByCategories = () => {
   const { id } = useParams<{ id: string }>();
   const { products, loading, error } = useProductsByCategory(id!);
-
   const {
     category,
     loading: categoryLoading,
     error: categoryError,
   } = useCategoryId(id!);
 
-  const getImageUrl = (link?: string) =>
-    link
-      ? link.startsWith("http")
-        ? link
-        : `https://${link}`
-      : placeholder;
-
   return (
     <div className="w-full px-2 sm:px-6 py-8">
-      {/* Bannière image catégorie AVEC texte centré */}
+      {/* Bannière catégorie avec texte centré */}
       <div className="max-w-6xl mx-auto mb-8 relative h-[200px] flex items-center justify-center">
         {categoryLoading ? (
           <div className="w-full h-full rounded-xl bg-gray-100 flex items-center justify-center text-gray-400 animate-pulse">
@@ -43,14 +43,13 @@ export const Produit = () => {
               loading="lazy"
               style={{ backgroundColor: "#f5f5f7" }}
             />
-            {/* Overlay sombre et texte centré */}
             <div className="absolute inset-0 flex items-center justify-center">
-                <span
-                    className="text-3xl md:text-4xl font-bold drop-shadow-lg bg-black/40 px-6 py-2 rounded-xl"
-                    style={{ color: "#fa9917" }}
-                >
-                    {category?.name}
-                </span>
+              <span
+                className="text-3xl md:text-4xl font-bold drop-shadow-lg bg-black/40 px-6 py-2 rounded-xl"
+                style={{ color: "#fa9917" }}
+              >
+                {category?.name}
+              </span>
             </div>
           </>
         )}
@@ -73,19 +72,30 @@ export const Produit = () => {
         <div className="text-center text-gray-400 my-20">Chargement des produits...</div>
       ) : error ? (
         <div className="text-center text-red-500 my-20">{error}</div>
+      ) : products.length === 0 ? (
+        <div className="w-full flex flex-col items-center justify-center py-24">
+          <span className="text-gray-400 text-lg md:text-xl">
+            Aucun produit trouvé dans cette catégorie.
+          </span>
+        </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 max-w-6xl mx-auto">
-          {products.length === 0 && (
-            <div className="col-span-full text-center text-gray-500">Aucun produit trouvé dans cette catégorie.</div>
-          )}
           {products.map((product) => {
-            const frLang = product.productLangages?.find(l => l.code === "FR") || product.productLangages?.[0];
+            const frLang =
+              product.productLangages?.find((l) => l.code === "FR") ||
+              product.productLangages?.[0];
             const image =
               product.productImages?.[0]?.image_link
-                ? product.productImages[0].image_link.startsWith("http")
-                  ? product.productImages[0].image_link
-                  : "https://" + product.productImages[0].image_link
+                ? getImageUrl(product.productImages[0].image_link)
                 : placeholder;
+            const minPriceObj = product.subscriptionTypes?.reduce(
+              (prev, curr) =>
+                parseFloat(curr.price.replace(/[^\d.]/g, "")) <
+                parseFloat(prev.price.replace(/[^\d.]/g, ""))
+                  ? curr
+                  : prev,
+              product.subscriptionTypes?.[0] || { price: "" }
+            );
             return (
               <Link to={`/product/${product.id}`} key={product.id}>
                 <div className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden border border-gray-100 flex flex-col">
@@ -99,7 +109,9 @@ export const Produit = () => {
                     />
                   </div>
                   <div className="p-6 text-center flex flex-col gap-2 flex-1">
-                    <h3 className="font-medium text-gray-900 text-lg mb-1">{frLang?.name || `Produit ${product.id}`}</h3>
+                    <h3 className="font-medium text-gray-900 text-lg mb-1">
+                      {frLang?.name || `Produit ${product.id}`}
+                    </h3>
                     <div className="flex flex-col items-center gap-1 mb-1">
                       <div
                         className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
@@ -115,6 +127,11 @@ export const Produit = () => {
                           ? `${product.available_stock} en stock`
                           : "Indisponible"}
                       </div>
+                      {minPriceObj?.price && (
+                        <div className="text-[#302082] text-sm font-semibold">
+                          {minPriceObj.price}
+                        </div>
+                      )}
                       <div className="text-xs text-gray-500 mt-1">{frLang?.description}</div>
                     </div>
                   </div>
