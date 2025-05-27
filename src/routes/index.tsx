@@ -7,6 +7,7 @@ import { Profile } from "@/pages/account/profile/Profile";
 import { ProduitsByCategories } from "@/pages/produits/ProduitsByCategories";
 import { Cart } from "@/pages/cart/Cart";
 import { AllProducts } from "@/pages/produits/AllProducts"
+import { AllCategories } from "@/pages/categories/AllCategories";
 
 export const routes: RouteObject[] = [
   {
@@ -38,13 +39,17 @@ export const routes: RouteObject[] = [
     element: <Cart />,
   },
   {
-    path: "/categorie/:id",
+    path: "/categorie/:id/produits",
     element: <ProduitsByCategories />,
   },
   {
     path: "/produits",
     element: <AllProducts />,
   },
+  {
+    path: "/categories",
+    element: <AllCategories />
+  }
 ];
 
 

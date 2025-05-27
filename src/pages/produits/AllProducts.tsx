@@ -49,16 +49,16 @@ export const AllProducts = () => {
             return (
               <Link key={product.id} to={`/product/${product.id}`}>
                 <div className="bg-[#f7f3fb] rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden border border-gray-100 flex flex-col min-h-[210px]">
-                  <div className="aspect-square bg-gray-50 flex items-center justify-center">
+                  <div className="aspect-square bg-gray-50 p-6 flex items-center justify-center">
                     <img
                       src={image}
-                      alt={frLang?.name || product.id.toString()}
+                      alt={frLang?.name || `Produit ${product.id}`}
                       width={300}
                       height={300}
                       className="w-full h-full object-cover rounded-lg"
-                      loading="lazy"
                     />
                   </div>
+
                   <div className="flex flex-col flex-1 justify-between px-4 py-2">
                     <h3 className="font-semibold text-center text-base mt-2 mb-1">{frLang?.name || `Produit ${product.id}`}</h3>
                     <div

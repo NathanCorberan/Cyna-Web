@@ -6,6 +6,8 @@ export interface Category {
   creation_date: string;
   category_order: number;
   imageLink: string;
+  slogan?: string;      
+  description?: string;
 }
 
 export interface CategoryApiResponse {

@@ -36,7 +36,7 @@ export function CategoryCard({ category }: CategoryCardProps) {
 
   return (
     <Link
-      to={`/categorie/${category.id}`}
+      to={`/categorie/${category.id}/produits`}
       state={{
         image: getImageUrl(category.imageLink),
         name: category.name,
