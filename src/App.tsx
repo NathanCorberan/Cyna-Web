@@ -1,6 +1,7 @@
 import { BrowserRouter, useRoutes } from "react-router-dom";
 import { routes } from "@/routes";
 import Header from "@/layouts/Header";
+import { useAutoRefreshJwt } from "@/hooks/auth/useAutoRefreshJwt";
 
 function AppRouter() {
   const routing = useRoutes(routes);
@@ -8,6 +9,7 @@ function AppRouter() {
 }
 
 function App() {
+  useAutoRefreshJwt();
   return (
     <BrowserRouter>
       <div className="flex flex-col min-h-svh bg-background text-foreground">
