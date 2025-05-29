@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
 import { Minus, Plus } from "lucide-react";
 import { useCart } from "@/hooks/carts/useCart";
+import { useCartQuantityActions } from "@/hooks/carts/useCartQuantityActions";
 import placeholder from "@/assets/placeholder.png";
 import { getAllTokens } from "@/lib/utils";
 
@@ -11,15 +11,16 @@ export const Cart = () => {
     const getTokens = getAllTokens();
     const cartToken = getTokens.cartToken ?? undefined;
     const jwt = getTokens.token ?? undefined;
-    const { cart, loading, error } = useCart(cartToken, jwt);
+    const { cart, loading, error, refetch } = useCart(cartToken, jwt);
+    const { increment, decrement, loadingId, error: quantityError } = useCartQuantityActions(refetch);
     const navigate = useNavigate();
 
-    // Gestion locale des quantités pour UX (+ / -)
-    const [quantities, setQuantities] = useState({});
+    // Quantités locales pour affichage instantané UX
+    const [quantities, setQuantities] = useState<{ [key: number]: number }>({});
 
     useEffect(() => {
         if (cart && cart.member) {
-            const initial = {};
+            const initial: { [key: number]: number } = {};
             cart.member.forEach(item => {
                 initial[item.id] = item.quantity;
             });
@@ -27,16 +28,25 @@ export const Cart = () => {
         }
     }, [cart]);
 
-    const updateQuantity = (id, value) => {
+    // Appelle l'API et met à jour la quantité locale instantanément
+    const handleDecrement = async (id: number) => {
         setQuantities(prev => ({
             ...prev,
-            [id]: value < 1 ? 1 : value,
+            [id]: Math.max(1, (prev[id] ?? 1) - 1), // UX : toujours >= 1 en local, mais l'API peut delete
         }));
-        // Ici tu pourrais faire l'appel API pour mettre à jour la quantité côté serveur
+        await decrement(id);
+    };
+
+    const handleIncrement = async (id: number) => {
+        setQuantities(prev => ({
+            ...prev,
+            [id]: (prev[id] ?? 1) + 1,
+        }));
+        await increment(id);
     };
 
     // Fonction pour extraire l'orderId du panier
-    const getOrderIdFromCart = (cart) => {
+    const getOrderIdFromCart = (cart: any) => {
         if (
             cart &&
             Array.isArray(cart.member) &&
@@ -44,7 +54,6 @@ export const Cart = () => {
             cart.member[0].order &&
             typeof cart.member[0].order["@id"] === "string"
         ) {
-            // /api/orders/13 → 13
             return cart.member[0].order["@id"].split("/").pop();
         }
         return null;
@@ -90,9 +99,9 @@ export const Cart = () => {
         );
     }
 
-    // Calcul des totaux avec la quantité locale (modifiée par + / -)
+    // Calcul des totaux avec la quantité locale
     const subtotal = cart.member.reduce(
-        (sum, item) => sum + parseFloat(item.unitPrice) * (quantities[item.id] ?? item.quantity),
+        (sum: number, item: any) => sum + parseFloat(item.unitPrice) * (quantities[item.id] ?? item.quantity),
         0
     );
     const shipping = 4.99;
@@ -103,7 +112,7 @@ export const Cart = () => {
             <h1 className="text-2xl font-bold mb-6">Mon panier</h1>
             <div className="grid md:grid-cols-3 gap-8">
                 <div className="md:col-span-2 space-y-4">
-                    {cart.member.map((item) => (
+                    {cart.member.map((item: any) => (
                         <div key={item.id} className="border rounded-md p-4 flex items-center gap-4">
                             <div className="w-20 h-20 bg-gray-100 flex-shrink-0 flex items-center justify-center overflow-hidden rounded">
                                 <img
@@ -119,14 +128,15 @@ export const Cart = () => {
                                 <h3 className="font-medium">{`Produit ${item.product.replace("/api/products/", "")}`}</h3>
                                 <div className="text-sm text-gray-500 mt-1">{parseFloat(item.unitPrice).toFixed(2)} €</div>
                             </div>
-                            {/* Bloc quantité parfaitement centré */}
+                            {/* Bloc quantité centré */}
                             <div className="flex items-center border rounded-md bg-white px-1 py-0">
                                 <Button
                                     type="button"
                                     variant="ghost"
                                     size="icon"
                                     className="h-8 w-8 p-0"
-                                    onClick={() => updateQuantity(item.id, (quantities[item.id] ?? item.quantity) - 1)}
+                                    onClick={() => handleDecrement(item.id)}
+                                    disabled={loadingId === item.id}
                                 >
                                     <Minus className="h-4 w-4" />
                                 </Button>
@@ -143,17 +153,20 @@ export const Cart = () => {
                                     variant="ghost"
                                     size="icon"
                                     className="h-8 w-8 p-0"
-                                    onClick={() => updateQuantity(item.id, (quantities[item.id] ?? item.quantity) + 1)}
+                                    onClick={() => handleIncrement(item.id)}
+                                    disabled={loadingId === item.id}
                                 >
                                     <Plus className="h-4 w-4" />
                                 </Button>
                             </div>
-
                             <div className="text-right font-medium w-20">
                                 {(parseFloat(item.unitPrice) * (quantities[item.id] ?? item.quantity)).toFixed(2)} €
                             </div>
                         </div>
                     ))}
+                    {quantityError && (
+                        <div className="text-red-500 text-xs mt-2">{quantityError}</div>
+                    )}
                 </div>
                 <div className="md:col-span-1">
                     <div className="border rounded-md p-4">

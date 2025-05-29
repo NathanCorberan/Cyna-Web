@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { fetchCart } from "@/features/cart/api/fetchCart";
 import type { CartAPIResponse } from "@/types/Cart";
 
@@ -7,7 +7,8 @@ export function useCart(cartToken?: string, jwt?: string) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  // Factorise la logique dans une fonction refetch
+  const refetch = useCallback(() => {
     if (!cartToken && !jwt) {
       setCart(null);
       setLoading(false);
@@ -21,5 +22,9 @@ export function useCart(cartToken?: string, jwt?: string) {
       .finally(() => setLoading(false));
   }, [cartToken, jwt]);
 
-  return { cart, loading, error };
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
+
+  return { cart, loading, error, refetch };
 }
