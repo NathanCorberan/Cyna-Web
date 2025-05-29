@@ -10,7 +10,7 @@ import { getAllTokens } from "@/lib/utils";
 export const Cart = () => {
     const getTokens = getAllTokens();
     const cartToken = getTokens.cartToken ?? undefined;
-    const jwt = getTokens.jwt ?? undefined;
+    const jwt = getTokens.token ?? undefined;
     const { cart, loading, error } = useCart(cartToken, jwt);
     console.log("getTokens", getTokens);
 

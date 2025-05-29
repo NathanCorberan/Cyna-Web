@@ -9,6 +9,7 @@ import { Cart } from "@/pages/cart/Cart";
 import { AllProducts } from "@/pages/produits/AllProducts"
 import { AllCategories } from "@/pages/categories/AllCategories";
 import { CheckoutPage } from "@/pages/checkout/Checkout";
+import ProductDetail from "@/pages/produits/ProduitDetails";
 
 export const routes: RouteObject[] = [
   {
@@ -54,6 +55,10 @@ export const routes: RouteObject[] = [
   {
     path:"/checkout",
     element:<CheckoutPage />
+  },
+  {
+    path: "/product/:id",
+    element: <ProductDetail />,
   }
 ];
 

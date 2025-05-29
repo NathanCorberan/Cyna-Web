@@ -4,7 +4,7 @@ import { getAllTokens } from "@/lib/utils";
 const API_URL = import.meta.env.VITE_API_URL + "my-orders";
 
 export async function fetchMyOrders(): Promise<UserOrderOutputDto[]> {
-  const jwt = getAllTokens().jwt;
+  const jwt = getAllTokens().token;
   if (!jwt) throw new Error("Utilisateur non authentifié");
 
   const res = await fetch(API_URL, {

@@ -6,27 +6,30 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+// Check si authentifié : présence du token !
 export function isAuthenticated(): boolean {
-  return Boolean(getAllTokens().jwt);
+  return Boolean(getAllTokens().token);
 }
 
+// Déconnexion (on peut aussi wipe cartToken si besoin)
 export function logout(): void {
   localStorage.removeItem("jwt");
   localStorage.removeItem("cartToken");
 }
 
+// Récupère tokens (toujours au format { token, refresh_token, cartToken? })
 export function getAllTokens(): TokensResult & { cartToken?: string | null } {
-  let jwt: string | null = null;
+  let token: string | null = null;
   let refresh_token: string | null = null;
 
   const jwtRaw = localStorage.getItem("jwt");
   if (jwtRaw) {
     try {
       const parsed = JSON.parse(jwtRaw);
-      jwt = parsed.token ?? parsed.jwt ?? null;
+      token = parsed.token ?? null;
       refresh_token = parsed.refresh_token ?? null;
     } catch {
-      jwt = jwtRaw;
+      token = jwtRaw;
     }
   }
 
@@ -41,18 +44,15 @@ export function getAllTokens(): TokensResult & { cartToken?: string | null } {
     }
   }
 
-  return { jwt, refresh_token, cartToken };
+  return { token, refresh_token, cartToken };
 }
 
-export function setTokens(data: any) {
-  const tokens = {
-    token: data.token,
-    refresh_token: data.refresh_token,
-  };
-  localStorage.setItem("jwt", JSON.stringify(tokens));
+// Sauvegarde les tokens sous la bonne forme
+export function setTokens(data: { token: string; refresh_token: string }) {
+  localStorage.setItem("jwt", JSON.stringify({ token: data.token, refresh_token: data.refresh_token }));
 }
 
-
+// Test si JWT expiré
 export function isJwtExpired(token: string): boolean {
   try {
     const payloadBase64 = token.split('.')[1];

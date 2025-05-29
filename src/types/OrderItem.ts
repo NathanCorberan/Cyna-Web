@@ -2,7 +2,7 @@ export interface OrderItem {
   "@id": string;
   "@type": string;
   id: number;
-  order: { "@id": string; "@type": string };
+  order: OrderRef;
   product: string; 
   quantity: number;
   unitPrice: string; 
@@ -15,4 +15,10 @@ export interface CartApiResponse {
   "@type": string;
   totalItems: number;
   member: OrderItem[];
+}
+
+export interface OrderRef {
+  "@id": string;
+  "@type": string;
+  cartToken?: string;
 }

@@ -1,15 +1,30 @@
 import type { LoginCredentials, LoginResponse } from "@/types/Login";
 import type { RegisterCredentials, RegisterResponse } from "@/types/Register";
+import { getAllTokens } from "@/lib/utils"; // Pour récupérer le cartToken
 
 export async function login(credentials: LoginCredentials): Promise<LoginResponse> {
   const API_URL = import.meta.env.VITE_API_URL + 'login';
+  //const API_URL = 'http://127.0.0.1:8000/api/login';
+
+  
+
+  // On récupère le cartToken dans le localStorage (optionnel)
+  const { cartToken } = getAllTokens();
+
+  // Prépare les headers
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+  if (cartToken) {
+    headers["X-Cart-Token"] = cartToken;
+  }
+
   const res = await fetch(API_URL, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers,
     body: JSON.stringify(credentials),
   });
+
   if (!res.ok) {
     const error = await res.text();
     throw new Error(error || "Erreur de connexion");

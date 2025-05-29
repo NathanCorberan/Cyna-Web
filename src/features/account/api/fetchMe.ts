@@ -4,13 +4,13 @@ import { getAllTokens } from "@/lib/utils";
 const API_URL = import.meta.env.VITE_API_URL + "me";
 
 export async function fetchMe(): Promise<User> {
-  const { jwt } = getAllTokens(); // n’utilise QUE le jwt
-  if (!jwt) throw new Error("Token manquant, veuillez vous reconnecter.");
+  const { token } = getAllTokens(); // n’utilise QUE le token
+  if (!token) throw new Error("Token manquant, veuillez vous reconnecter.");
 
   const res = await fetch(API_URL, {
     headers: {
       "accept": "application/ld+json",
-      "Authorization": `Bearer ${jwt}`
+      "Authorization": `Bearer ${token}`
     }
   });
   if (!res.ok) {

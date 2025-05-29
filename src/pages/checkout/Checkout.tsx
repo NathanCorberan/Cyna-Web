@@ -44,7 +44,6 @@ export const CheckoutPage = () => {
             </div>
           </div>
 
-          {/* Cartes commandes */}
           {loading ? (
             <div className="flex justify-center py-20 text-gray-400 text-lg">Chargement…</div>
           ) : error ? (
