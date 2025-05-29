@@ -11,13 +11,14 @@ export function useAddToCart() {
     async (
       product_id: number,
       quantity: number,
+      subscription_type_id: number,
       options?: { cartToken?: string; jwt?: string }
     ) => {
       setLoading(true);
       setError(null);
       setOrderItem(null);
       try {
-        const data = await addToCart(product_id, quantity, options);
+        const data = await addToCart(product_id, quantity, subscription_type_id, options);
         setOrderItem(data);
         return data;
       } catch (e: any) {

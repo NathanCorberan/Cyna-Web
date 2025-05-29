@@ -8,8 +8,10 @@ import { ProduitsByCategories } from "@/pages/produits/ProduitsByCategories";
 import { Cart } from "@/pages/cart/Cart";
 import { AllProducts } from "@/pages/produits/AllProducts"
 import { AllCategories } from "@/pages/categories/AllCategories";
-import { CheckoutPage } from "@/pages/checkout/Checkout";
+import { HistoriqueCheckoutPage } from "@/pages/checkout/HistoriqueCheckout";
 import ProductDetail from "@/pages/produits/ProduitDetails";
+import CheckoutPage from "@/pages/checkout/CheckoutPage";
+import SuccessPage from "@/pages/checkout/SuccessPage"; 
 
 export const routes: RouteObject[] = [
   {
@@ -54,12 +56,20 @@ export const routes: RouteObject[] = [
   },
   {
     path:"/checkout",
-    element:<CheckoutPage />
+    element:<HistoriqueCheckoutPage />
   },
   {
     path: "/product/:id",
     element: <ProductDetail />,
-  }
+  },
+  {
+    path: "/checkout/:orderId",
+    element: <CheckoutPage />,
+  },
+  {
+    path: "/success",
+    element: <SuccessPage />,
+  },
 ];
 
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Minus, Plus } from "lucide-react";
 import { useCart } from "@/hooks/carts/useCart";
 import placeholder from "@/assets/placeholder.png";
@@ -12,7 +12,7 @@ export const Cart = () => {
     const cartToken = getTokens.cartToken ?? undefined;
     const jwt = getTokens.token ?? undefined;
     const { cart, loading, error } = useCart(cartToken, jwt);
-    console.log("getTokens", getTokens);
+    const navigate = useNavigate();
 
     // Gestion locale des quantités pour UX (+ / -)
     const [quantities, setQuantities] = useState({});
@@ -33,6 +33,21 @@ export const Cart = () => {
             [id]: value < 1 ? 1 : value,
         }));
         // Ici tu pourrais faire l'appel API pour mettre à jour la quantité côté serveur
+    };
+
+    // Fonction pour extraire l'orderId du panier
+    const getOrderIdFromCart = (cart) => {
+        if (
+            cart &&
+            Array.isArray(cart.member) &&
+            cart.member.length > 0 &&
+            cart.member[0].order &&
+            typeof cart.member[0].order["@id"] === "string"
+        ) {
+            // /api/orders/13 → 13
+            return cart.member[0].order["@id"].split("/").pop();
+        }
+        return null;
     };
 
     if (!cartToken && !jwt) {
@@ -75,7 +90,7 @@ export const Cart = () => {
         );
     }
 
-    // Calcul des totaux avec la quantité locale (modifée par + / -)
+    // Calcul des totaux avec la quantité locale (modifiée par + / -)
     const subtotal = cart.member.reduce(
         (sum, item) => sum + parseFloat(item.unitPrice) * (quantities[item.id] ?? item.quantity),
         0
@@ -92,12 +107,12 @@ export const Cart = () => {
                         <div key={item.id} className="border rounded-md p-4 flex items-center gap-4">
                             <div className="w-20 h-20 bg-gray-100 flex-shrink-0 flex items-center justify-center overflow-hidden rounded">
                                 <img
-                                src={placeholder}
-                                alt={`Produit ${item.product.replace("/api/products/", "")}`}
-                                width={80}
-                                height={80}
-                                className="object-cover"
-                                style={{ width: 80, height: 80 }}
+                                    src={placeholder}
+                                    alt={`Produit ${item.product.replace("/api/products/", "")}`}
+                                    width={80}
+                                    height={80}
+                                    className="object-cover"
+                                    style={{ width: 80, height: 80 }}
                                 />
                             </div>
                             <div className="flex-grow">
@@ -138,7 +153,6 @@ export const Cart = () => {
                                 {(parseFloat(item.unitPrice) * (quantities[item.id] ?? item.quantity)).toFixed(2)} €
                             </div>
                         </div>
-
                     ))}
                 </div>
                 <div className="md:col-span-1">
@@ -158,7 +172,17 @@ export const Cart = () => {
                                 <span>{total.toFixed(2)} €</span>
                             </div>
                         </div>
-                        <Button className="w-full bg-[#302082] hover:bg-[#3a2a9d]">
+                        <Button
+                            className="w-full bg-[#302082] hover:bg-[#3a2a9d]"
+                            onClick={() => {
+                                const orderId = getOrderIdFromCart(cart);
+                                if (orderId) {
+                                    navigate(`/checkout/${orderId}`);
+                                } else {
+                                    alert("Impossible de trouver la commande associée à ce panier.");
+                                }
+                            }}
+                        >
                             Passer au paiement
                         </Button>
                         <div className="mt-4 space-y-2">

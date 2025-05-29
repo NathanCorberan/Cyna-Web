@@ -20,7 +20,7 @@ const getStatusInfo = (status: string) => {
   }
 };
 
-export const CheckoutPage = () => {
+export const HistoriqueCheckoutPage = () => {
   const { orders, loading, error } = useMyOrders();
 
   const totalOrders = orders.length;

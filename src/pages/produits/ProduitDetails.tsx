@@ -24,13 +24,20 @@ export default function ProductDetail() {
   const handleAddToCart = async () => {
     if (!product) return;
 
-    // Utilise le helper pour récupérer proprement token/cartToken
     const { token, cartToken } = getAllTokens();
 
-    await addToCart(product.id, cartQty, {
-      cartToken: cartToken || undefined,
-      jwt: token || undefined,
-    });
+    const subscriptionTypeId = product.subscriptionTypes[selectedPricing]?.id;
+    if (!subscriptionTypeId) return;
+
+    await addToCart(
+      product.id,
+      cartQty,
+      subscriptionTypeId,
+      {
+        cartToken: cartToken || undefined,
+        jwt: token || undefined,
+      }
+    );
   };
 
   if (loading) {
