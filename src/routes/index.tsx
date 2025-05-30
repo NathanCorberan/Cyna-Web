@@ -12,6 +12,7 @@ import { HistoriqueCheckoutPage } from "@/pages/checkout/HistoriqueCheckout";
 import ProductDetail from "@/pages/produits/ProduitDetails";
 import CheckoutPage from "@/pages/checkout/CheckoutPage";
 import SuccessPage from "@/pages/checkout/SuccessPage"; 
+import AbonnementsPage from "@/pages/subscription/MySubscription"; 
 
 export const routes: RouteObject[] = [
   {
@@ -69,6 +70,10 @@ export const routes: RouteObject[] = [
   {
     path: "/success",
     element: <SuccessPage />,
+  },
+  {
+    path: "/abonnements",
+    element: <AbonnementsPage />
   },
 ];
 

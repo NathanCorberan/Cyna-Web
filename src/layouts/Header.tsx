@@ -105,6 +105,15 @@ export default function Header() {
                 >
                   Produits
                 </NavLink>
+                <NavLink to="/abonnements"
+                  className={cn(
+                    "px-4 py-3 hover:bg-[#3a2a9d] transition-colors",
+                    pathname === "/abonnements" && "bg-[#3a2a9d]",
+                  )}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Mes abonnements
+                </NavLink>
                 <NavLink to="/checkout"
                   className={cn(
                     "px-4 py-3 hover:bg-[#3a2a9d] transition-colors",
