@@ -1,6 +1,3 @@
-"use client"
-
-import React from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -17,7 +14,6 @@ import {
 } from "lucide-react"
 
 import { useMySubscriptions } from "@/hooks/subscriptions/useMySubscriptions"
-import type { MySubOutputDto } from "@/types/subscription"
 
 const formatDate = (isoDate?: string | null) =>
   isoDate
