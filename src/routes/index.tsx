@@ -14,6 +14,11 @@ import CheckoutPage from "@/pages/checkout/CheckoutPage";
 import SuccessPage from "@/pages/checkout/SuccessPage"; 
 import AbonnementsPage from "@/pages/subscription/MySubscription"; 
 
+//admin
+import AdminDashboard from "@/pages/admin/Dashboard";
+import AdminLayout from "@/layouts/AdminLayout"
+import AdminCategoriesPage from "@/pages/admin/categories/Categories";
+
 export const routes: RouteObject[] = [
   {
     path: "/",
@@ -75,6 +80,25 @@ export const routes: RouteObject[] = [
     path: "/abonnements",
     element: <AbonnementsPage />
   },
+  {
+    path: "/admin",
+    element: <AdminLayout />,
+    children: [
+      {
+        index: true,
+        element: <AdminDashboard />,
+      },
+      {
+        path: "categories",
+        element: <AdminCategoriesPage />
+      }
+      // Autres pages admin :
+      // { path: "products", element: <AdminProducts /> },
+      // { path: "orders", element: <AdminOrders /> },
+      // etc.
+    ],
+  },
+  
 ];
 
 
