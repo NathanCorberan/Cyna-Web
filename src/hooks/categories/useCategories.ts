@@ -1,30 +1,24 @@
-import { useEffect, useState } from 'react';
-import { fetchCategories } from '@/features/categories/api/fetchCategories';
-import type { Category } from '@/types/Category';
+import { useEffect, useState, useCallback } from "react";
+import { fetchCategories } from "@/features/categories/api/fetchCategories";
+import type { Category } from "@/types/Category";
 
 export function useCategories() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    let isMounted = true;
+  const load = useCallback(() => {
     setLoading(true);
+    setError(null);
     fetchCategories()
-      .then((data) => {
-        if (isMounted) setCategories(data);
-      })
-      .catch((e) => {
-        if (isMounted) setError(e.message);
-      })
-      .finally(() => {
-        if (isMounted) setLoading(false);
-      });
-
-    return () => {
-      isMounted = false;
-    };
+      .then((data) => setCategories(data))
+      .catch((e) => setError(e.message))
+      .finally(() => setLoading(false));
   }, []);
 
-  return { categories, loading, error };
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  return { categories, loading, error, refetch: load };
 }

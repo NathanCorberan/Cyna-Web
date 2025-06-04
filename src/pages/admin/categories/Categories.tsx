@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Search, Plus, Edit, Trash2, ChevronRight, ChevronDown } from "lucide-react"
 import { Card } from "@/components/ui/card"
-import { Switch } from "@/components/ui/switch"
 import {
   Dialog,
   DialogContent,
@@ -15,124 +14,128 @@ import {
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { useCategories } from "@/hooks/categories/useCategories"
+import { useCreateCategory } from "@/hooks/categories/useCreateCategory"
+import type { Category } from "@/types/Category"
+
+const CATEGORY_IMAGE_BASE = "http://srv839278.hstgr.cloud:8000/assets/images/categories/"
+const DEFAULT_IMAGE = ""
+
+function getCategoryImageUrl(category: Category) {
+  if (!category.imageLink) return "";
+  if (
+    category.imageLink.startsWith("http://") ||
+    category.imageLink.startsWith("https://") ||
+    category.imageLink.startsWith("//")
+  ) {
+    return category.imageLink;
+  }
+  if (category.imageLink.startsWith("/assets/images/categories/")) {
+    return "http://srv839278.hstgr.cloud:8000" + category.imageLink;
+  }
+  return CATEGORY_IMAGE_BASE + category.imageLink.replace(/^\/+/, "");
+}
+
+function getCategoryDescription(category: Category, lang = "fr") {
+  if (!category.categoryLanguages || !Array.isArray(category.categoryLanguages)) return ""
+  const found = category.categoryLanguages.find((l) => l.code?.toLowerCase() === lang.toLowerCase())
+  return found?.description || ""
+}
 
 export default function AdminCategoriesPage() {
-  const [searchQuery, setSearchQuery] = useState("")
-  const [showAddDialog, setShowAddDialog] = useState(false)
-  const [showEditDialog, setShowEditDialog] = useState(false)
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
-  const [selectedCategory, setSelectedCategory] = useState<any>(null)
+  const [searchQuery, setSearchQuery] = useState<string>("")
+  const [showAddDialog, setShowAddDialog] = useState<boolean>(false)
+  const [showEditDialog, setShowEditDialog] = useState<boolean>(false)
+  const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false)
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null)
   const [expandedCategories, setExpandedCategories] = useState<number[]>([])
+  const [selectedImage, setSelectedImage] = useState<File | null>(null)
+  const [imagePreview, setImagePreview] = useState<string>("")
 
-  const categories = [
-    {
-      id: 1,
-      name: "Vêtements",
-      slug: "vetements",
-      description: "Tous nos vêtements",
-      products: 45,
-      active: true,
-      parent: null,
-      children: [
-        {
-          id: 5,
-          name: "Hommes",
-          slug: "vetements-hommes",
-          description: "Vêtements pour hommes",
-          products: 25,
-          active: true,
-          parent: 1,
-          children: [],
-        },
-        {
-          id: 6,
-          name: "Femmes",
-          slug: "vetements-femmes",
-          description: "Vêtements pour femmes",
-          products: 20,
-          active: true,
-          parent: 1,
-          children: [],
-        },
-      ],
-    },
-    {
-      id: 2,
-      name: "Chaussures",
-      slug: "chaussures",
-      description: "Toutes nos chaussures",
-      products: 28,
-      active: true,
-      parent: null,
-      children: [],
-    },
-    {
-      id: 3,
-      name: "Accessoires",
-      slug: "accessoires",
-      description: "Tous nos accessoires",
-      products: 36,
-      active: true,
-      parent: null,
-      children: [],
-    },
-    {
-      id: 4,
-      name: "Électronique",
-      slug: "electronique",
-      description: "Tous nos produits électroniques",
-      products: 12,
-      active: false,
-      parent: null,
-      children: [],
-    },
-  ]
+  // Formulaire d'ajout (ajout de category_order ici)
+  const [addForm, setAddForm] = useState<{
+    name: string,
+    description: string,
+    lang: string,
+    category_order: number
+  }>({
+    name: "",
+    description: "",
+    lang: "fr",
+    category_order: 1,
+  })
 
-  const toggleExpand = (categoryId: number) => {
-    if (expandedCategories.includes(categoryId)) {
-      setExpandedCategories(expandedCategories.filter((id) => id !== categoryId))
-    } else {
-      setExpandedCategories([...expandedCategories, categoryId])
+  // Hooks
+  const { categories, loading, error, refetch } = useCategories()
+  const { create, loading: loadingCreate, error: errorCreate } = useCreateCategory()
+
+  // Reset formulaire + image
+  const resetAddForm = () => {
+    setAddForm({ name: "", description: "", lang: "fr", category_order: 1 });
+    resetImageStates();
+  }
+
+  // Gestion d'image
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      setSelectedImage(file)
+      const reader = new FileReader()
+      reader.onloadend = () => setImagePreview(reader.result as string)
+      reader.readAsDataURL(file)
     }
   }
-
-  const handleEditClick = (category: any) => {
-    setSelectedCategory(category)
-    setShowEditDialog(true)
+  const resetImageStates = () => {
+    setSelectedImage(null)
+    setImagePreview("")
   }
 
-  const handleDeleteClick = (category: any) => {
+  const toggleExpand = (categoryId: number) => {
+    setExpandedCategories((prev) =>
+      prev.includes(categoryId) ? prev.filter((id) => id !== categoryId) : [...prev, categoryId]
+    )
+  }
+
+  const handleEditClick = (category: Category) => {
+    setSelectedCategory(category)
+    setShowEditDialog(true)
+    resetImageStates()
+  }
+
+  const handleDeleteClick = (category: Category) => {
     setSelectedCategory(category)
     setShowDeleteDialog(true)
   }
 
-  const filteredCategories = categories.filter((category) =>
-    category.name.toLowerCase().includes(searchQuery.toLowerCase()),
+  // Recherche sur les catégories de premier niveau uniquement (tu peux changer si besoin)
+  const filteredCategories = categories.filter((category: Category) =>
+    category.name.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
-  const renderCategoryRow = (category: any, level = 0) => {
+  const renderCategoryRow = (category: Category, level = 0) => {
     const isExpanded = expandedCategories.includes(category.id)
-    const hasChildren = category.children && category.children.length > 0
-
     return (
       <>
         <TableRow key={category.id}>
           <TableCell>
+            {category.imageLink && (
+              <img
+                src={getCategoryImageUrl(category)}
+                alt={category.name}
+                className="w-10 h-10 object-cover rounded"
+                style={{ background: "#eee" }}
+              />
+            )}
+          </TableCell>
+          <TableCell>
             <div className="flex items-center" style={{ paddingLeft: `${level * 20}px` }}>
-              {hasChildren && (
-                <button onClick={() => toggleExpand(category.id)} className="mr-2 focus:outline-none">
-                  {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-                </button>
-              )}
-              {!hasChildren && <div className="w-6"></div>}
               <span>{category.name}</span>
             </div>
           </TableCell>
-          <TableCell>{category.slug}</TableCell>
-          <TableCell className="text-center">{category.products}</TableCell>
-          <TableCell className="text-center">
-            <Switch id={`active-${category.id}`} defaultChecked={category.active} />
+          <TableCell className="max-w-[240px] truncate">
+            {getCategoryDescription(category, "fr")}
           </TableCell>
+          <TableCell className="text-center">{category.nbProducts ?? 0}</TableCell>
           <TableCell className="text-right">
             <div className="flex justify-end gap-2">
               <Button variant="ghost" size="sm" onClick={() => handleEditClick(category)}>
@@ -144,11 +147,38 @@ export default function AdminCategoriesPage() {
             </div>
           </TableCell>
         </TableRow>
-        {isExpanded && hasChildren && category.children.map((child: any) => renderCategoryRow(child, level + 1))}
       </>
     )
   }
 
+  // ---- LOGIQUE DE SOUMISSION (AJOUTER UNE CATÉGORIE) ----
+  const handleAddCategory = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!addForm.name.trim()) return alert("Nom obligatoire");
+    if (!addForm.description.trim()) return alert("Description obligatoire");
+    if (!addForm.category_order) return alert("Ordre obligatoire");
+
+    // Le hook attend exactement ce type :
+    // { name, description, lang, category_order, imageFile }
+    const toSend = {
+      name: addForm.name,
+      description: addForm.description,
+      lang: addForm.lang,
+      category_order: addForm.category_order,
+      imageFile: selectedImage,
+    };
+
+    try {
+      await create(toSend);
+      resetAddForm();
+      setShowAddDialog(false);
+      if (refetch) refetch();
+    } catch (err) {
+      // déjà géré
+    }
+  }
+
+  // --- RENDU ---
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -171,26 +201,38 @@ export default function AdminCategoriesPage() {
             />
           </div>
         </div>
-
         <div className="rounded-md border">
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead>Image</TableHead>
                 <TableHead>Nom</TableHead>
-                <TableHead>Slug</TableHead>
+                <TableHead>Description</TableHead>
                 <TableHead className="text-center">Produits</TableHead>
-                <TableHead className="text-center">Actif</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredCategories.map((category) => renderCategoryRow(category))}
-              {filteredCategories.length === 0 && (
+              {loading ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center py-8 text-gray-500">
+                    Chargement...
+                  </TableCell>
+                </TableRow>
+              ) : error ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center py-8 text-red-500">
+                    Erreur : {error}
+                  </TableCell>
+                </TableRow>
+              ) : filteredCategories.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={5} className="text-center py-8 text-gray-500">
                     Aucune catégorie trouvée
                   </TableCell>
                 </TableRow>
+              ) : (
+                filteredCategories.map((category: Category) => renderCategoryRow(category))
               )}
             </TableBody>
           </Table>
@@ -198,53 +240,130 @@ export default function AdminCategoriesPage() {
       </Card>
 
       {/* Dialog pour ajouter une catégorie */}
-      <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
-        <DialogContent>
+      <Dialog
+        open={showAddDialog}
+        onOpenChange={(open) => {
+          setShowAddDialog(open)
+          if (!open) resetAddForm()
+        }}
+      >
+        <DialogContent className="bg-white shadow-xl rounded-xl max-w-md">
           <DialogHeader>
             <DialogTitle>Ajouter une catégorie</DialogTitle>
             <DialogDescription>Créez une nouvelle catégorie pour vos produits</DialogDescription>
           </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Nom de la catégorie</Label>
-              <Input id="name" placeholder="Nom de la catégorie" />
+          <form onSubmit={handleAddCategory}>
+            <div className="space-y-4 py-4">
+              {/* Image */}
+              <div className="space-y-2">
+                <Label htmlFor="add-image">Image de la catégorie</Label>
+                <div className="space-y-3">
+                  <Input
+                    id="add-image"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="cursor-pointer"
+                  />
+                  {imagePreview && (
+                    <div className="relative w-32 h-32 border border-gray-300 rounded-md overflow-hidden">
+                      <img src={imagePreview || DEFAULT_IMAGE} alt="Aperçu" className="w-full h-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={resetImageStates}
+                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+              {/* Nom */}
+              <div className="space-y-2">
+                <Label htmlFor="name">Nom de la catégorie</Label>
+                <Input
+                  id="name"
+                  placeholder="Nom de la catégorie"
+                  value={addForm.name}
+                  onChange={e => setAddForm(f => ({ ...f, name: e.target.value }))}
+                />
+              </div>
+              {/* Description */}
+              <div className="space-y-2">
+                <Label htmlFor="description">Description</Label>
+                <Textarea
+                  id="description"
+                  placeholder="Description de la catégorie"
+                  value={addForm.description}
+                  onChange={e => setAddForm(f => ({ ...f, description: e.target.value }))}
+                />
+              </div>
+              {/* Ordre */}
+              <div className="space-y-2">
+                <Label htmlFor="category_order">Ordre de la catégorie</Label>
+                <Input
+                  id="category_order"
+                  type="number"
+                  min={1}
+                  placeholder="Ordre"
+                  value={addForm.category_order}
+                  onChange={e => setAddForm(f => ({
+                    ...f,
+                    category_order: Number(e.target.value)
+                  }))}
+                />
+              </div>
+              {/* Langue */}
+              <div className="space-y-2">
+                <Label htmlFor="add-lang">Langue</Label>
+                <select
+                  id="add-lang"
+                  className="w-full rounded-md border border-gray-300 p-2"
+                  value={addForm.lang}
+                  onChange={e => setAddForm(f => ({ ...f, lang: e.target.value }))}
+                >
+                  <option value="fr">Français</option>
+                  <option value="en">Anglais</option>
+                  <option value="es">Espagnol</option>
+                  <option value="de">Allemand</option>
+                </select>
+              </div>
+              {errorCreate && <div className="text-red-500 text-sm">{errorCreate}</div>}
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="slug">Slug</Label>
-              <Input id="slug" placeholder="slug-de-la-categorie" />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
-              <Textarea id="description" placeholder="Description de la catégorie" />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="parent">Catégorie parente</Label>
-              <select id="parent" className="w-full rounded-md border border-gray-300 p-2">
-                <option value="">Aucune (catégorie principale)</option>
-                {categories.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Switch id="active" defaultChecked />
-              <Label htmlFor="active">Activer la catégorie</Label>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowAddDialog(false)}>
-              Annuler
-            </Button>
-            <Button className="bg-[#302082] hover:bg-[#3a2a9d]">Ajouter</Button>
-          </DialogFooter>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                type="button"
+                onClick={() => setShowAddDialog(false)}
+                disabled={loadingCreate}
+              >
+                Annuler
+              </Button>
+              <Button
+                className="bg-[#302082] hover:bg-[#3a2a9d]"
+                type="submit"
+                disabled={loadingCreate}
+              >
+                {loadingCreate ? "Ajout..." : "Ajouter"}
+              </Button>
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
 
-      {/* Dialog pour modifier une catégorie */}
-      <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
-        <DialogContent>
+      {/* Dialog pour modifier une catégorie (structure, à relier à un hook d'édition si tu veux) */}
+      <Dialog
+        open={showEditDialog}
+        onOpenChange={(open) => {
+          setShowEditDialog(open)
+          if (!open) {
+            resetImageStates()
+            setSelectedCategory(null)
+          }
+        }}
+      >
+        <DialogContent className="bg-white shadow-xl rounded-xl max-w-md">
           <DialogHeader>
             <DialogTitle>Modifier la catégorie</DialogTitle>
             <DialogDescription>Modifiez les informations de la catégorie</DialogDescription>
@@ -252,37 +371,70 @@ export default function AdminCategoriesPage() {
           {selectedCategory && (
             <div className="space-y-4 py-4">
               <div className="space-y-2">
+                <Label htmlFor="edit-image">Image de la catégorie</Label>
+                <div className="space-y-3">
+                  {selectedCategory.imageLink && !imagePreview && (
+                    <div className="relative w-32 h-32 border border-gray-300 rounded-md overflow-hidden">
+                      <img
+                        src={getCategoryImageUrl(selectedCategory)}
+                        alt="Image actuelle"
+                        className="w-full h-full object-cover"
+                        onError={e => { (e.currentTarget as HTMLImageElement).src = DEFAULT_IMAGE }}
+                      />
+                      <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1 text-center">
+                        Image actuelle
+                      </div>
+                    </div>
+                  )}
+                  <Input
+                    id="edit-image"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="cursor-pointer"
+                  />
+                  {imagePreview && (
+                    <div className="relative w-32 h-32 border border-gray-300 rounded-md overflow-hidden">
+                      <img
+                        src={imagePreview || DEFAULT_IMAGE}
+                        alt="Nouvelle image"
+                        className="w-full h-full object-cover"
+                      />
+                      <button
+                        type="button"
+                        onClick={resetImageStates}
+                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600"
+                      >
+                        ×
+                      </button>
+                      <div className="absolute bottom-0 left-0 right-0 bg-green-500 bg-opacity-75 text-white text-xs p-1 text-center">
+                        Nouvelle image
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="space-y-2">
                 <Label htmlFor="edit-name">Nom de la catégorie</Label>
                 <Input id="edit-name" defaultValue={selectedCategory.name} />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="edit-slug">Slug</Label>
-                <Input id="edit-slug" defaultValue={selectedCategory.slug} />
-              </div>
-              <div className="space-y-2">
                 <Label htmlFor="edit-description">Description</Label>
-                <Textarea id="edit-description" defaultValue={selectedCategory.description} />
+                <Textarea
+                  id="edit-description"
+                  defaultValue={getCategoryDescription(selectedCategory, "fr")}
+                />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="edit-parent">Catégorie parente</Label>
+                <Label htmlFor="edit-lang">Langue</Label>
                 <select
-                  id="edit-parent"
+                  id="edit-lang"
                   className="w-full rounded-md border border-gray-300 p-2"
-                  defaultValue={selectedCategory.parent}
+                  defaultValue="fr"
                 >
-                  <option value="">Aucune (catégorie principale)</option>
-                  {categories
-                    .filter((c) => c.id !== selectedCategory.id)
-                    .map((category) => (
-                      <option key={category.id} value={category.id}>
-                        {category.name}
-                      </option>
-                    ))}
+                  <option value="fr">Français</option>
+                  <option value="en">Anglais</option>
                 </select>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Switch id="edit-active" defaultChecked={selectedCategory.active} />
-                <Label htmlFor="edit-active">Activer la catégorie</Label>
               </div>
             </div>
           )}
@@ -297,14 +449,14 @@ export default function AdminCategoriesPage() {
 
       {/* Dialog pour supprimer une catégorie */}
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <DialogContent>
+        <DialogContent className="bg-white shadow-xl rounded-xl">
           <DialogHeader>
             <DialogTitle>Confirmer la suppression</DialogTitle>
             <DialogDescription>
               Êtes-vous sûr de vouloir supprimer cette catégorie ? Cette action est irréversible.
-              {selectedCategory && selectedCategory.products > 0 && (
+              {selectedCategory && selectedCategory.nbProducts > 0 && (
                 <p className="text-red-500 mt-2">
-                  Attention : Cette catégorie contient {selectedCategory.products} produits qui seront affectés.
+                  Attention : Cette catégorie contient {selectedCategory.nbProducts} produits qui seront affectés.
                 </p>
               )}
             </DialogDescription>
