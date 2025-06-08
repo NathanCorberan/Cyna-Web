@@ -1,6 +1,5 @@
 // features/categories/api/editCategory.ts
 export async function editCategory(
-  id: number,
   data: {
     name: string;
     description: string;
@@ -19,8 +18,8 @@ export async function editCategory(
     formData.append("imageFile", data.imageFile);
   }
 
-  const res = await fetch(`http://srv839278.hstgr.cloud:8000/api/categories/${id}`, {
-    method: "PUT",
+  const res = await fetch("http://srv839278.hstgr.cloud:8000/api/categories", {
+    method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
     },

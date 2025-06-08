@@ -1,13 +1,14 @@
-// hooks/categories/useEditCategory.ts
 import { useState } from "react";
-import { editCategory } from "@/features/categories/api/editCategory";
 import { getAllTokens } from "@/lib/utils";
+import { editCategory as postCategory } from "@/features/categories/api/editCategory";
+import { deleteCategory } from "@/features/categories/api/deleteCategory";
 import type { CategoryFormInput } from "@/types/Category";
 
 export function useEditCategory() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Nouveau “edit” : suppression puis POST (création)
   const edit = async (id: number, data: CategoryFormInput) => {
     setLoading(true);
     setError(null);
@@ -18,7 +19,12 @@ export function useEditCategory() {
       throw new Error("Token absent");
     }
     try {
-      const result = await editCategory(id, data, token);
+      // 1. Delete (attendre la fin)
+      await deleteCategory(id, token);
+
+      // 2. Create (POST) : on ne passe PAS l’id
+      const result = await postCategory(data, token);
+
       setLoading(false);
       return result;
     } catch (e: any) {

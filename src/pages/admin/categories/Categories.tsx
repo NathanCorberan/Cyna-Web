@@ -1,8 +1,8 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Search, Plus, Edit, Trash2, ChevronRight, ChevronDown } from "lucide-react"
+import { Search, Plus, Edit, Trash2 } from "lucide-react"
 import { Card } from "@/components/ui/card"
 import {
   Dialog,
@@ -16,10 +16,19 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { useCategories } from "@/hooks/categories/useCategories"
 import { useCreateCategory } from "@/hooks/categories/useCreateCategory"
+import { useDeleteCategory } from "@/hooks/categories/useDeleteCategory"
+import { useEditCategory } from "@/hooks/categories/useEditCategory"
 import type { Category } from "@/types/Category"
 
 const CATEGORY_IMAGE_BASE = "http://srv839278.hstgr.cloud:8000/assets/images/categories/"
 const DEFAULT_IMAGE = ""
+
+// --- Utilitaire pour télécharger une image existante en File
+async function urlToFile(url: string, filename: string): Promise<File> {
+  const response = await fetch(url);
+  const data = await response.blob();
+  return new File([data], filename, { type: data.type });
+}
 
 function getCategoryImageUrl(category: Category) {
   if (!category.imageLink) return "";
@@ -48,30 +57,37 @@ export default function AdminCategoriesPage() {
   const [showEditDialog, setShowEditDialog] = useState<boolean>(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false)
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null)
-  const [expandedCategories, setExpandedCategories] = useState<number[]>([])
   const [selectedImage, setSelectedImage] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string>("")
 
-  // Formulaire d'ajout (ajout de category_order ici)
-  const [addForm, setAddForm] = useState<{
-    name: string,
-    description: string,
-    lang: string,
-    category_order: number
-  }>({
+  // Formulaires
+  const [addForm, setAddForm] = useState({
     name: "",
     description: "",
     lang: "fr",
     category_order: 1,
-  })
+  });
 
-  // Hooks
+  const [editForm, setEditForm] = useState({
+    name: "",
+    description: "",
+    lang: "fr",
+    category_order: 1,
+  });
+
+  // Hooks API
   const { categories, loading, error, refetch } = useCategories()
   const { create, loading: loadingCreate, error: errorCreate } = useCreateCategory()
+  const { remove, loading: loadingDelete, error: errorDelete } = useDeleteCategory();
+  const { edit, loading: loadingEdit, error: errorEdit } = useEditCategory();
 
   // Reset formulaire + image
   const resetAddForm = () => {
     setAddForm({ name: "", description: "", lang: "fr", category_order: 1 });
+    resetImageStates();
+  }
+  const resetEditForm = () => {
+    setEditForm({ name: "", description: "", lang: "fr", category_order: 1 });
     resetImageStates();
   }
 
@@ -90,64 +106,69 @@ export default function AdminCategoriesPage() {
     setImagePreview("")
   }
 
-  const toggleExpand = (categoryId: number) => {
-    setExpandedCategories((prev) =>
-      prev.includes(categoryId) ? prev.filter((id) => id !== categoryId) : [...prev, categoryId]
-    )
-  }
-
+  // Ouvre la modale d'édition et préremplit
   const handleEditClick = (category: Category) => {
     setSelectedCategory(category)
     setShowEditDialog(true)
-    resetImageStates()
   }
-
+  // Ouvre la modale suppression
   const handleDeleteClick = (category: Category) => {
     setSelectedCategory(category)
     setShowDeleteDialog(true)
   }
+
+  // Préremplir formulaire édition à l'ouverture du dialog
+  useEffect(() => {
+    if (showEditDialog && selectedCategory) {
+      setEditForm({
+        name: selectedCategory.name,
+        description: getCategoryDescription(selectedCategory, "fr"),
+        lang: "fr",
+        category_order: selectedCategory.category_order || 1,
+      });
+      resetImageStates();
+    }
+  }, [showEditDialog, selectedCategory]);
 
   // Recherche sur les catégories de premier niveau uniquement (tu peux changer si besoin)
   const filteredCategories = categories.filter((category: Category) =>
     category.name.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
+  // Rendu d'une ligne catégorie
   const renderCategoryRow = (category: Category, level = 0) => {
-    const isExpanded = expandedCategories.includes(category.id)
     return (
-      <>
-        <TableRow key={category.id}>
-          <TableCell>
-            {category.imageLink && (
-              <img
-                src={getCategoryImageUrl(category)}
-                alt={category.name}
-                className="w-10 h-10 object-cover rounded"
-                style={{ background: "#eee" }}
-              />
-            )}
-          </TableCell>
-          <TableCell>
-            <div className="flex items-center" style={{ paddingLeft: `${level * 20}px` }}>
-              <span>{category.name}</span>
-            </div>
-          </TableCell>
-          <TableCell className="max-w-[240px] truncate">
-            {getCategoryDescription(category, "fr")}
-          </TableCell>
-          <TableCell className="text-center">{category.nbProducts ?? 0}</TableCell>
-          <TableCell className="text-right">
-            <div className="flex justify-end gap-2">
-              <Button variant="ghost" size="sm" onClick={() => handleEditClick(category)}>
-                <Edit className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="sm" className="text-red-500" onClick={() => handleDeleteClick(category)}>
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </div>
-          </TableCell>
-        </TableRow>
-      </>
+      <TableRow key={category.id}>
+        <TableCell>
+          {category.imageLink && (
+            <img
+              src={getCategoryImageUrl(category)}
+              alt={category.name}
+              className="w-10 h-10 object-cover rounded"
+              style={{ background: "#eee" }}
+            />
+          )}
+        </TableCell>
+        <TableCell>
+          <div className="flex items-center" style={{ paddingLeft: `${level * 20}px` }}>
+            <span>{category.name}</span>
+          </div>
+        </TableCell>
+        <TableCell className="max-w-[240px] truncate">
+          {getCategoryDescription(category, "fr")}
+        </TableCell>
+        <TableCell className="text-center">{category.nbProducts ?? 0}</TableCell>
+        <TableCell className="text-right">
+          <div className="flex justify-end gap-2">
+            <Button variant="ghost" size="sm" onClick={() => handleEditClick(category)}>
+              <Edit className="h-4 w-4" />
+            </Button>
+            <Button variant="ghost" size="sm" className="text-red-500" onClick={() => handleDeleteClick(category)}>
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
+        </TableCell>
+      </TableRow>
     )
   }
 
@@ -158,8 +179,6 @@ export default function AdminCategoriesPage() {
     if (!addForm.description.trim()) return alert("Description obligatoire");
     if (!addForm.category_order) return alert("Ordre obligatoire");
 
-    // Le hook attend exactement ce type :
-    // { name, description, lang, category_order, imageFile }
     const toSend = {
       name: addForm.name,
       description: addForm.description,
@@ -177,6 +196,37 @@ export default function AdminCategoriesPage() {
       // déjà géré
     }
   }
+
+  // ---- LOGIQUE DE SOUMISSION (EDITER UNE CATÉGORIE) ----
+  const handleEditCategory = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!selectedCategory) return;
+    if (!editForm.name.trim()) return alert("Nom obligatoire");
+    if (!editForm.description.trim()) return alert("Description obligatoire");
+    if (!editForm.category_order) return alert("Ordre obligatoire");
+
+    const toSend: any = {
+      name: editForm.name,
+      description: editForm.description,
+      lang: editForm.lang,
+      category_order: editForm.category_order,
+    };
+    if (selectedImage) {
+      toSend.imageFile = selectedImage;
+    } else if (selectedCategory.imageLink) {
+      const url = getCategoryImageUrl(selectedCategory);
+      const file = await urlToFile(url, selectedCategory.imageLink.split('/').pop() || "image.jpg");
+      toSend.imageFile = file;
+    }
+    try {
+      await edit(selectedCategory.id, toSend);
+      setShowEditDialog(false);
+      setSelectedCategory(null);
+      if (refetch) refetch();
+    } catch (err) {
+      // error affichée par le hook
+    }
+  };
 
   // --- RENDU ---
   return (
@@ -352,13 +402,13 @@ export default function AdminCategoriesPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Dialog pour modifier une catégorie (structure, à relier à un hook d'édition si tu veux) */}
+      {/* Dialog pour modifier une catégorie */}
       <Dialog
         open={showEditDialog}
         onOpenChange={(open) => {
           setShowEditDialog(open)
           if (!open) {
-            resetImageStates()
+            resetEditForm()
             setSelectedCategory(null)
           }
         }}
@@ -369,81 +419,112 @@ export default function AdminCategoriesPage() {
             <DialogDescription>Modifiez les informations de la catégorie</DialogDescription>
           </DialogHeader>
           {selectedCategory && (
-            <div className="space-y-4 py-4">
-              <div className="space-y-2">
-                <Label htmlFor="edit-image">Image de la catégorie</Label>
-                <div className="space-y-3">
-                  {selectedCategory.imageLink && !imagePreview && (
-                    <div className="relative w-32 h-32 border border-gray-300 rounded-md overflow-hidden">
-                      <img
-                        src={getCategoryImageUrl(selectedCategory)}
-                        alt="Image actuelle"
-                        className="w-full h-full object-cover"
-                        onError={e => { (e.currentTarget as HTMLImageElement).src = DEFAULT_IMAGE }}
-                      />
-                      <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1 text-center">
-                        Image actuelle
+            <form onSubmit={handleEditCategory}>
+              <div className="space-y-4 py-4">
+                {/* Image */}
+                <div className="space-y-2">
+                  <Label htmlFor="edit-image">Image de la catégorie</Label>
+                  <div className="space-y-3">
+                    {selectedCategory.imageLink && !imagePreview && (
+                      <div className="relative w-32 h-32 border border-gray-300 rounded-md overflow-hidden">
+                        <img
+                          src={getCategoryImageUrl(selectedCategory)}
+                          alt="Image actuelle"
+                          className="w-full h-full object-cover"
+                          onError={e => { (e.currentTarget as HTMLImageElement).src = DEFAULT_IMAGE }}
+                        />
+                        <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1 text-center">
+                          Image actuelle
+                        </div>
                       </div>
-                    </div>
-                  )}
-                  <Input
-                    id="edit-image"
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageChange}
-                    className="cursor-pointer"
-                  />
-                  {imagePreview && (
-                    <div className="relative w-32 h-32 border border-gray-300 rounded-md overflow-hidden">
-                      <img
-                        src={imagePreview || DEFAULT_IMAGE}
-                        alt="Nouvelle image"
-                        className="w-full h-full object-cover"
-                      />
-                      <button
-                        type="button"
-                        onClick={resetImageStates}
-                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600"
-                      >
-                        ×
-                      </button>
-                      <div className="absolute bottom-0 left-0 right-0 bg-green-500 bg-opacity-75 text-white text-xs p-1 text-center">
-                        Nouvelle image
+                    )}
+                    <Input
+                      id="edit-image"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      className="cursor-pointer"
+                    />
+                    {imagePreview && (
+                      <div className="relative w-32 h-32 border border-gray-300 rounded-md overflow-hidden">
+                        <img
+                          src={imagePreview || DEFAULT_IMAGE}
+                          alt="Nouvelle image"
+                          className="w-full h-full object-cover"
+                        />
+                        <button
+                          type="button"
+                          onClick={resetImageStates}
+                          className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600"
+                        >
+                          ×
+                        </button>
+                        <div className="absolute bottom-0 left-0 right-0 bg-green-500 bg-opacity-75 text-white text-xs p-1 text-center">
+                          Nouvelle image
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
+                {/* Nom */}
+                <div className="space-y-2">
+                  <Label htmlFor="edit-name">Nom de la catégorie</Label>
+                  <Input
+                    id="edit-name"
+                    value={editForm.name}
+                    onChange={e => setEditForm(f => ({ ...f, name: e.target.value }))}
+                  />
+                </div>
+                {/* Description */}
+                <div className="space-y-2">
+                  <Label htmlFor="edit-description">Description</Label>
+                  <Textarea
+                    id="edit-description"
+                    value={editForm.description}
+                    onChange={e => setEditForm(f => ({ ...f, description: e.target.value }))}
+                  />
+                </div>
+                {/* Ordre */}
+                <div className="space-y-2">
+                  <Label htmlFor="edit-order">Ordre de la catégorie</Label>
+                  <Input
+                    id="edit-order"
+                    type="number"
+                    min={1}
+                    value={editForm.category_order}
+                    onChange={e => setEditForm(f => ({
+                      ...f,
+                      category_order: Number(e.target.value)
+                    }))}
+                  />
+                </div>
+                {/* Langue */}
+                <div className="space-y-2">
+                  <Label htmlFor="edit-lang">Langue</Label>
+                  <select
+                    id="edit-lang"
+                    className="w-full rounded-md border border-gray-300 p-2"
+                    value={editForm.lang}
+                    onChange={e => setEditForm(f => ({ ...f, lang: e.target.value }))}
+                  >
+                    <option value="fr">Français</option>
+                    <option value="en">Anglais</option>
+                    <option value="es">Espagnol</option>
+                    <option value="de">Allemand</option>
+                  </select>
+                </div>
+                {errorEdit && <div className="text-red-500 text-sm">{errorEdit}</div>}
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="edit-name">Nom de la catégorie</Label>
-                <Input id="edit-name" defaultValue={selectedCategory.name} />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="edit-description">Description</Label>
-                <Textarea
-                  id="edit-description"
-                  defaultValue={getCategoryDescription(selectedCategory, "fr")}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="edit-lang">Langue</Label>
-                <select
-                  id="edit-lang"
-                  className="w-full rounded-md border border-gray-300 p-2"
-                  defaultValue="fr"
-                >
-                  <option value="fr">Français</option>
-                  <option value="en">Anglais</option>
-                </select>
-              </div>
-            </div>
+              <DialogFooter>
+                <Button variant="outline" type="button" onClick={() => setShowEditDialog(false)}>
+                  Annuler
+                </Button>
+                <Button className="bg-[#302082] hover:bg-[#3a2a9d]" type="submit" disabled={loadingEdit}>
+                  {loadingEdit ? "Mise à jour..." : "Enregistrer"}
+                </Button>
+              </DialogFooter>
+            </form>
           )}
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowEditDialog(false)}>
-              Annuler
-            </Button>
-            <Button className="bg-[#302082] hover:bg-[#3a2a9d]">Enregistrer</Button>
-          </DialogFooter>
         </DialogContent>
       </Dialog>
 
@@ -465,8 +546,27 @@ export default function AdminCategoriesPage() {
             <Button variant="outline" onClick={() => setShowDeleteDialog(false)}>
               Annuler
             </Button>
-            <Button variant="destructive">Supprimer</Button>
+            <Button
+              variant="destructive"
+              disabled={loadingDelete || !selectedCategory}
+              onClick={async () => {
+                if (!selectedCategory) return;
+                try {
+                  await remove(selectedCategory.id);
+                  setShowDeleteDialog(false);
+                  setSelectedCategory(null);
+                  if (refetch) refetch();
+                } catch (e) {
+                  // L’erreur est déjà affichée
+                }
+              }}
+            >
+              {loadingDelete ? "Suppression..." : "Supprimer"}
+            </Button>
           </DialogFooter>
+          {errorDelete && (
+            <div className="text-red-500 text-sm mt-2">{errorDelete}</div>
+          )}
         </DialogContent>
       </Dialog>
     </div>
