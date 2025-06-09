@@ -22,7 +22,7 @@ export default function AdminSidebarContent({ isCollapsed = false }: AdminSideba
   const menuItems = [
     { to: "/admin", label: "Tableau de bord", icon: LayoutDashboard },
     { to: "/admin/categories", label: "Catégories", icon: FolderTree },
-    { to: "/admin/products", label: "Produits", icon: ShoppingBag },
+    { to: "/admin/produits", label: "Produits", icon: ShoppingBag },
     { to: "/admin/orders", label: "Commandes", icon: ShoppingCart },
     { to: "/admin/users", label: "Utilisateurs", icon: Users },
     { to: "/admin/news", label: "Nouveautées", icon: Newspaper },

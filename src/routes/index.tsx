@@ -17,7 +17,9 @@ import AbonnementsPage from "@/pages/subscription/MySubscription";
 //admin
 import AdminDashboard from "@/pages/admin/Dashboard";
 import AdminLayout from "@/layouts/AdminLayout"
-import AdminCategoriesPage from "@/pages/admin/categories/Categories";
+import AdminCategoriesPage from "@/pages/admin/categories/CategoriesAdmin";
+import ProductsAdmin from "@/pages/admin/produits/ProductsAdmin";
+import NewProductPage from "@/pages/admin/produits/NewProductPage"
 
 export const routes: RouteObject[] = [
   {
@@ -91,6 +93,14 @@ export const routes: RouteObject[] = [
       {
         path: "categories",
         element: <AdminCategoriesPage />
+      },
+      {
+        path: "produits",
+        element: <ProductsAdmin />
+      },
+      {
+        path: "produits/new",
+        element: <NewProductPage />
       }
       // Autres pages admin :
       // { path: "products", element: <AdminProducts /> },
