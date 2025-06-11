@@ -101,7 +101,12 @@ export const routes: RouteObject[] = [
       {
         path: "produits/new",
         element: <NewProductPage />
-      }
+      },
+      {
+        path: "/admin/produits/:id",
+        element: <NewProductPage />
+      },
+      
       // Autres pages admin :
       // { path: "products", element: <AdminProducts /> },
       // { path: "orders", element: <AdminOrders /> },

@@ -36,3 +36,14 @@ export interface ProductApiResponse {
   totalItems: number;
   member: Product[];
 }
+
+export interface CreateProduitInput {
+  name: string;
+  description: string;
+  lang: string;
+  status: string;
+  available_stock: number;
+  category_id: number;
+  imageFile?: File[] | null;
+  subscriptionTypes?: { type: string; price: string }[];
+}

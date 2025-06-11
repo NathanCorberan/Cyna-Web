@@ -62,6 +62,8 @@ export default function ProductsAdmin() {
     }
   }
 
+const PRODUITS_IMAGE_BASE = "http://srv839278.hstgr.cloud:8000/assets/images/products/"
+
   // Génère dynamiquement les catégories depuis les produits récupérés
   const categories = Array.from(new Set(products.map((p) => p.category_name)))
 
@@ -142,7 +144,7 @@ export default function ProductsAdmin() {
                         <div className="flex items-center gap-3">
                           {image ? (
                             <img
-                              src={/^https?:\/\//.test(image) ? image : `https://${image}`}
+                              src={/^https?:\/\//.test(image) ? image : PRODUITS_IMAGE_BASE + `${image}`}
                               alt={productName}
                               className="w-10 h-10 object-cover rounded-md"
                             />
@@ -178,13 +180,11 @@ export default function ProductsAdmin() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem>
-                              <Eye className="h-4 w-4 mr-2" />
-                              Voir
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                              <Edit className="h-4 w-4 mr-2" />
-                              Modifier
+                            <DropdownMenuItem asChild>
+                              <Link to={`/admin/produits/${product.id}`}>
+                                <Edit className="h-4 w-4 mr-2" />
+                                Modifier
+                              </Link>
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem className="text-red-600" onClick={() => handleDeleteClick(product.id)}>
