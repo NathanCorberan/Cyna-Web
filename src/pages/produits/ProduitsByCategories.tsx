@@ -5,13 +5,7 @@ import placeholder from "@/assets/placeholder.png";
 import { useProductsByCategory } from "@/hooks/products/useProductsByCategory";
 import { useCategoryId } from "@/hooks/categories/useCategoryId";
 
-// Fonction pour sécuriser la récupération d’une image (catégorie ou produit)
-const getImageUrl = (link?: string) =>
-  link
-    ? link.startsWith("http")
-      ? link
-      : `https://${link}`
-    : placeholder;
+const PRODUITS_IMAGE_BASE = "http://srv839278.hstgr.cloud:8000/assets/images/products/";
 
 export const ProduitsByCategories = () => {
   const { id } = useParams<{ id: string }>();
@@ -37,7 +31,13 @@ export const ProduitsByCategories = () => {
         ) : (
           <>
             <img
-              src={getImageUrl(category?.imageLink)}
+              src={
+                category?.imageLink
+                  ? (category.imageLink.startsWith("http")
+                      ? category.imageLink
+                      : PRODUITS_IMAGE_BASE + category.imageLink)
+                  : placeholder
+              }
               alt={category?.name || "Catégorie"}
               className="w-full h-full object-cover object-center rounded-xl border shadow"
               loading="lazy"
@@ -69,9 +69,9 @@ export const ProduitsByCategories = () => {
 
       {/* Grille produits */}
       {loading ? (
-        <div className="text-center text-gray-400 my-20">Chargement des produits...</div>
+        <div className="flex justify-center py-12 text-gray-400 text-lg">Chargement des produits...</div>
       ) : error ? (
-        <div className="text-center text-red-500 my-20">{error}</div>
+        <div className="flex justify-center py-12 text-red-500 text-lg">{error}</div>
       ) : products.length === 0 ? (
         <div className="w-full flex flex-col items-center justify-center py-24">
           <span className="text-gray-400 text-lg md:text-xl">
@@ -79,26 +79,32 @@ export const ProduitsByCategories = () => {
           </span>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 max-w-6xl mx-auto">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-8 max-w-6xl mx-auto">
           {products.map((product) => {
-            const frLang =
-              product.productLangages?.find((l) => l.code === "FR") ||
-              product.productLangages?.[0];
-            const image =
-              product.productImages?.[0]?.image_link
-                ? getImageUrl(product.productImages[0].image_link)
-                : placeholder;
-            const minPriceObj = product.subscriptionTypes?.reduce(
-              (prev, curr) =>
-                parseFloat(curr.price.replace(/[^\d.]/g, "")) <
-                parseFloat(prev.price.replace(/[^\d.]/g, ""))
-                  ? curr
-                  : prev,
-              product.subscriptionTypes?.[0] || { price: "" }
-            );
+            const frLang = product.productLangages?.find(l => l.code === "FR") || product.productLangages?.[0];
+            const image = product.productImages?.[0]?.image_link
+              ? (
+                  product.productImages[0].image_link.startsWith("http")
+                    ? product.productImages[0].image_link
+                    : PRODUITS_IMAGE_BASE + product.productImages[0].image_link
+                )
+              : placeholder;
+            const description = frLang?.description || "";
+            const price = (() => {
+              const subs = product.subscriptionTypes;
+              if (!subs || subs.length === 0) return "-";
+              const min = subs.reduce(
+                (min, curr) =>
+                  parseFloat(curr.price.replace(/[^\d.]/g, "")) < parseFloat(min.price.replace(/[^\d.]/g, "")) ? curr : min,
+                subs[0]
+              );
+              return min.price;
+            })();
+            const inStock = product.available_stock > 0;
+
             return (
-              <Link to={`/product/${product.id}`} key={product.id}>
-                <div className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden border border-gray-100 flex flex-col">
+              <Link key={product.id} to={`/produit/${product.id}`}>
+                <div className="bg-[#f7f3fb] rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden border border-gray-100 flex flex-col min-h-[210px]">
                   <div className="aspect-square bg-gray-50 p-6 flex items-center justify-center">
                     <img
                       src={image}
@@ -108,31 +114,32 @@ export const ProduitsByCategories = () => {
                       className="w-full h-full object-cover rounded-lg"
                     />
                   </div>
-                  <div className="p-6 text-center flex flex-col gap-2 flex-1">
-                    <h3 className="font-medium text-gray-900 text-lg mb-1">
+                  <div className="flex flex-col flex-1 justify-between px-4 py-2">
+                    <h3 className="font-semibold text-center text-base mt-2 mb-1">
                       {frLang?.name || `Produit ${product.id}`}
                     </h3>
-                    <div className="flex flex-col items-center gap-1 mb-1">
-                      <div
-                        className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
-                          product.available_stock > 0
-                            ? "bg-green-100 text-green-800"
-                            : "bg-red-100 text-red-800"
-                        }`}
+                    <div
+                      className="text-xs text-gray-700 text-center mb-3"
+                      style={{
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        display: "-webkit-box",
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: "vertical"
+                      }}
+                    >
+                      {description}
+                    </div>
+                    <div className="flex items-center justify-between mt-auto">
+                      <span className="font-bold text-sm">{price}</span>
+                      <span
+                        className={
+                          "text-xs font-semibold " +
+                          (inStock ? "text-green-600" : "text-red-500")
+                        }
                       >
-                        {product.available_stock > 0 ? "En stock" : "Rupture de stock"}
-                      </div>
-                      <div className="text-gray-600 text-xs">
-                        {product.available_stock > 0
-                          ? `${product.available_stock} en stock`
-                          : "Indisponible"}
-                      </div>
-                      {minPriceObj?.price && (
-                        <div className="text-[#302082] text-sm font-semibold">
-                          {minPriceObj.price}
-                        </div>
-                      )}
-                      <div className="text-xs text-gray-500 mt-1">{frLang?.description}</div>
+                        {inStock ? "Disponible" : "Indisponible"}
+                      </span>
                     </div>
                   </div>
                 </div>

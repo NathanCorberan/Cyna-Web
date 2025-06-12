@@ -20,6 +20,7 @@ export default function ProductDetail() {
 
   // HOOK pour ajout panier
   const { addToCart, loading: addLoading, error: addError, orderItem } = useAddToCart();
+  const PRODUITS_IMAGE_BASE = "http://srv839278.hstgr.cloud:8000/assets/images/products/";
 
   const handleAddToCart = async () => {
     if (!product) return;
@@ -88,7 +89,7 @@ export default function ProductDetail() {
               <img
                 src={images[selectedImageIndex]?.image_link.startsWith("http")
                   ? images[selectedImageIndex]?.image_link
-                  : `https://${images[selectedImageIndex]?.image_link}`}
+                  : PRODUITS_IMAGE_BASE + `${images[selectedImageIndex]?.image_link}`}
                 alt={productLang?.name}
                 className="object-cover w-full h-full"
               />
@@ -122,7 +123,13 @@ export default function ProductDetail() {
                     }`}
                   >
                     <img
-                      src={image.image_link.startsWith("http") ? image.image_link : `https://${image.image_link}`}
+                      src={
+                        image.image_link
+                          ? (image.image_link.startsWith("http")
+                              ? image.image_link
+                              : PRODUITS_IMAGE_BASE + image.image_link)
+                          : placeholder
+                      }
                       alt={`${productLang?.name} - Image ${index + 1}`}
                       className="object-cover w-full h-full"
                     />
@@ -153,47 +160,68 @@ export default function ProductDetail() {
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-gray-900">Choisissez votre formule</h3>
               <div className="grid gap-3">
-                {pricing.map((option, idx) => (
-                  <Card
-                    key={option.id}
-                    className={`cursor-pointer transition-all ${
-                      selectedPricing === idx
-                        ? "ring-2 ring-[#302082] border-[#302082]"
-                        : "hover:border-gray-300"
-                    }`}
-                    onClick={() => setSelectedPricing(idx)}
-                  >
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <div
-                            className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
-                              selectedPricing === idx ? "border-[#302082] bg-[#302082]" : "border-gray-300"
-                            }`}
-                          >
-                            {selectedPricing === idx && (
-                              <div className="w-2 h-2 rounded-full bg-white"></div>
-                            )}
-                          </div>
-                          <div>
-                            <div className="font-medium capitalize">
-                              {option.type === "Monthly" ? "Abonnement mensuel" : "Licence à vie"}
+                {pricing.map((option, idx) => {
+                  // Centralise le mapping pour labels et descriptions
+                  const type = option.type?.toLowerCase();
+                  let label = "";
+                  let description = "";
+                  let suffix = "";
+
+                  if (type === "monthly") {
+                    label = "Abonnement mensuel";
+                    description = "Facturation mensuelle, résiliable à tout moment";
+                    suffix = "/mois";
+                  } else if (type === "yearly") {
+                    label = "Abonnement annuel";
+                    description = "Facturation annuelle, résiliable à tout moment";
+                    suffix = "/an";
+                  } else if (type === "lifetime") {
+                    label = "Licence à vie";
+                    description = "Paiement unique, accès permanent";
+                    suffix = "";
+                  } else {
+                    label = option.type;
+                    description = "";
+                    suffix = "";
+                  }
+
+                  return (
+                    <Card
+                      key={option.id}
+                      className={`cursor-pointer transition-all ${
+                        selectedPricing === idx
+                          ? "ring-2 ring-[#302082] border-[#302082]"
+                          : "hover:border-gray-300"
+                      }`}
+                      onClick={() => setSelectedPricing(idx)}
+                    >
+                      <CardContent className="p-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div
+                              className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                                selectedPricing === idx ? "border-[#302082] bg-[#302082]" : "border-gray-300"
+                              }`}
+                            >
+                              {selectedPricing === idx && (
+                                <div className="w-2 h-2 rounded-full bg-white"></div>
+                              )}
                             </div>
-                            <div className="text-sm text-gray-600">
-                              {option.type === "Monthly"
-                                ? "Facturation mensuelle, résiliable à tout moment"
-                                : "Paiement unique, accès permanent"}
+                            <div>
+                              <div className="font-medium capitalize">{label}</div>
+                              <div className="text-sm text-gray-600">{description}</div>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-2xl font-bold text-[#302082]">
+                              {option.price} {suffix}
                             </div>
                           </div>
                         </div>
-                        <div className="text-right">
-                          <div className="text-2xl font-bold text-[#302082]">{option.price}</div>
-                          {option.type === "Monthly" && <div className="text-sm text-gray-600">/mois</div>}
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                      </CardContent>
+                    </Card>
+                  );
+                })}
               </div>
             </div>
 

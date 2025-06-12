@@ -9,6 +9,69 @@ import placeholder from "@/assets/placeholder.png";
 import { useCarousels } from "@/hooks/carousel/useCarousel";
 import { useTopProducts } from "@/hooks/products/useTopProducts";
 
+// --- ProductCard réutilisable (même design que AllProducts) ---
+const PRODUITS_IMAGE_BASE = "http://srv839278.hstgr.cloud:8000/assets/images/products/";
+function ProductCard({ product }: { product: any }) {
+  const frLang = product.productLangages?.find((l) => l.code === "FR") || product.productLangages?.[0];
+  const image =
+    product.productImages?.[0]?.image_link
+      ? PRODUITS_IMAGE_BASE + product.productImages[0].image_link
+      : placeholder;
+  const description = frLang?.description || "";
+  const price =
+    product.subscriptionTypes && product.subscriptionTypes.length > 0
+      ? product.subscriptionTypes.reduce(
+          (min, curr) =>
+            parseFloat(curr.price.replace(/[^\d.]/g, "")) < parseFloat(min.price.replace(/[^\d.]/g, "")) ? curr : min,
+          product.subscriptionTypes[0]
+        ).price
+      : "-";
+  const inStock = product.available_stock > 0;
+
+  return (
+    <Link key={product.id} to={`/produit/${product.id}`}>
+      <div className="bg-[#f7f3fb] rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden border border-gray-100 flex flex-col min-h-[210px]">
+        <div className="aspect-square bg-gray-50 p-6 flex items-center justify-center">
+          <img
+            src={image}
+            alt={frLang?.name || `Produit ${product.id}`}
+            width={300}
+            height={300}
+            className="w-full h-full object-cover rounded-lg"
+          />
+        </div>
+        <div className="flex flex-col flex-1 justify-between px-4 py-2">
+          <h3 className="font-semibold text-center text-base mt-2 mb-1">{frLang?.name || `Produit ${product.id}`}</h3>
+          <div
+            className="text-xs text-gray-700 text-center mb-3"
+            style={{
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical"
+            }}
+          >
+            {description}
+          </div>
+          <div className="flex items-center justify-between mt-auto">
+            <span className="font-bold text-sm">{price}</span>
+            <span
+              className={
+                "text-xs font-semibold " +
+                (inStock ? "text-green-600" : "text-red-500")
+              }
+            >
+              {inStock ? "Disponible" : "Indisponible"}
+            </span>
+          </div>
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+// --- PAGE HOME ---
 export const Home = () => {
   const { categories, loading, error } = useCategories();
   const { carousels, loading: loadingCarousels, error: errorCarousels } = useCarousels();
@@ -25,6 +88,7 @@ export const Home = () => {
 
   return (
     <div className="w-full px-2 sm:px-6 py-8">
+      {/* --- CAROUSEL --- */}
       <div className="relative w-full h-[180px] sm:h-[260px] md:h-[320px] lg:h-[380px] rounded-lg overflow-hidden mb-10">
         {loadingCarousels ? (
           <div className="flex items-center justify-center w-full h-full bg-gray-100">
@@ -93,6 +157,7 @@ export const Home = () => {
         )}
       </div>
 
+      {/* --- NOUVEAUTÉS (statiques, tu peux rendre dynamique comme ProductCard si tu veux) --- */}
       <div className="mb-12">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-[#302082]">Nouveautés</h2>
@@ -164,6 +229,7 @@ export const Home = () => {
         </div>
       </div>
 
+      {/* --- CATÉGORIES --- */}
       {loading ? (
         <CategoriesGridSkeleton />
       ) : error ? (
@@ -172,6 +238,7 @@ export const Home = () => {
         <CategoriesGrid categories={categories} />
       )}
 
+      {/* --- TOP DU MOMENT (Produits) --- */}
       <div className="w-full mb-10">
         <h2 className="text-xl font-bold mb-4">Top du moment</h2>
         {loadingTopProducts ? (
@@ -179,55 +246,10 @@ export const Home = () => {
         ) : errorTopProducts ? (
           <div className="text-destructive text-center mb-6">{errorTopProducts}</div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6 md:gap-8">
-            {topProducts.map((product) => {
-              const frLang =
-                product.productLangages?.find((lang) => lang.code === "FR") ||
-                product.productLangages?.[0];
-              const image =
-                product.productImages && product.productImages.length > 0
-                  ? product.productImages[0].image_link.startsWith("http")
-                    ? product.productImages[0].image_link
-                    : "https://" + product.productImages[0].image_link
-                  : placeholder;
-              const minPriceObj =
-                product.subscriptionTypes &&
-                product.subscriptionTypes.reduce(
-                  (prev, curr) =>
-                    parseFloat(curr.price.replace(/[^\d.]/g, "")) <
-                    parseFloat(prev.price.replace(/[^\d.]/g, ""))
-                      ? curr
-                      : prev,
-                  product.subscriptionTypes[0]
-                );
-              return (
-                <Link to={`/produit/${product.id}`} key={product.id}>
-                  <div className="hover:shadow-lg transition-all p-4 h-full flex flex-col items-center justify-center rounded-2xl border border-muted bg-white">
-                    <div className="aspect-square bg-gray-100 w-full mb-4 flex items-center justify-center overflow-hidden rounded-lg max-w-xs">
-                      <img
-                        src={image}
-                        alt={frLang?.name || `Produit ${product.id}`}
-                        className="object-cover w-full h-full"
-                      />
-                    </div>
-                    <div className="text-center flex flex-col gap-1">
-                      <div className="font-medium text-base">
-                        {frLang?.name || `Produit ${product.id}`}
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        {product.category_name}
-                      </div>
-                      <div className="text-sm font-semibold text-[#302082]">
-                        {minPriceObj ? minPriceObj.price : ""}
-                      </div>
-                      <div className="text-xs text-gray-600 line-clamp-2">
-                        {frLang?.description}
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-              );
-            })}
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6 gap-6 md:gap-8">
+            {topProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
           </div>
         )}
       </div>

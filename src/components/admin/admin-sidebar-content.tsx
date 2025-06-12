@@ -9,6 +9,8 @@ import {
   BarChart,
   Tag,
   Newspaper,
+  BanIcon,
+  Film,
 } from "lucide-react"
 import { cn } from "../../lib/utils"
 
@@ -26,7 +28,7 @@ export default function AdminSidebarContent({ isCollapsed = false }: AdminSideba
     { to: "/admin/orders", label: "Commandes", icon: ShoppingCart },
     { to: "/admin/users", label: "Utilisateurs", icon: Users },
     { to: "/admin/news", label: "Nouveautées", icon: Newspaper },
-    { to: "/admin/statistics", label: "Statistiques", icon: BarChart },
+    { to: "/admin/carousel", label: "Carousel", icon: Film },
     { to: "/admin/settings", label: "Paramètres", icon: Settings },
   ]
 

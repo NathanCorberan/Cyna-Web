@@ -67,7 +67,7 @@ export const routes: RouteObject[] = [
     element:<HistoriqueCheckoutPage />
   },
   {
-    path: "/product/:id",
+    path: "/produit/:id",
     element: <ProductDetail />,
   },
   {

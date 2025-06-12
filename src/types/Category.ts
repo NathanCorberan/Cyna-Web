@@ -12,10 +12,8 @@ export interface Category {
   creation_date: string;
   category_order: number;
   imageLink: string;
-  slogan?: string;
-  description?: string;
-  categoryLanguages?: CategoryLanguage[];
-  nbProducts?: number;
+  categoryLanguages: CategoryLanguage[];
+  nbProducts: number;
 }
 
 export interface CategoryApiResponse {
@@ -33,6 +31,7 @@ export interface CategoryFormInput {
   category_order: number;
   imageFile?: File | null;
 }
+
 export type CategoryFormErrors = {
   [K in keyof CategoryFormInput]?: string;
 };
