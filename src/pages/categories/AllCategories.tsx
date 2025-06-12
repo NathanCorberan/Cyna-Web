@@ -3,7 +3,8 @@ import { Button } from "@/components/ui/button";
 import placeholder from "@/assets/placeholder.png";
 import { useCategories } from "@/hooks/categories/useCategories";
 import type { Category } from "@/types/Category";
-import { useLanguage } from "@/contexts/LanguageContext"; // Import du contexte
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useTranslation } from "react-i18next";
 
 // Helper pour trouver la langue demandée ou fallback
 function getCategoryLang(category: Category, lang = "fr") {
@@ -14,11 +15,11 @@ function getCategoryLang(category: Category, lang = "fr") {
   );
 }
 
-// Le chemin de base de tes images catégories
 const CATEGORY_IMAGE_BASE = "http://srv839278.hstgr.cloud:8000/assets/images/categories/";
 
 export const AllCategories = () => {
-  const { language } = useLanguage(); // Récupération de la langue active
+  const { language } = useLanguage();
+  const { t } = useTranslation();
 
   const { categories, loading, error } = useCategories();
 
@@ -26,22 +27,18 @@ export const AllCategories = () => {
     <div className="w-full px-2 sm:px-6 py-8 min-h-screen bg-white">
       <div className="text-center mb-12">
         <h1 className="text-3xl font-bold text-[#302082] mb-4">
-          {language.toLowerCase() === "fr" ? "Toutes les catégories" : "All Categories"}
+          {t("allCategories.title", "Toutes les catégories")}
         </h1>
         <p className="text-gray-600">
           {loading
-            ? language.toLowerCase() === "fr"
-              ? "Chargement..."
-              : "Loading..."
-            : `${categories.length} ${
-                language.toLowerCase() === "fr" ? "catégories disponibles" : "categories available"
-              }`}
+            ? t("allCategories.loading", "Chargement...")
+            : `${categories.length} ${t("allCategories.countLabel", "catégories disponibles")}`}
         </p>
       </div>
 
       {loading ? (
         <div className="flex justify-center py-12 text-gray-400 text-lg">
-          {language.toLowerCase() === "fr" ? "Chargement..." : "Loading..."}
+          {t("allCategories.loading", "Chargement...")}
         </div>
       ) : error ? (
         <div className="flex justify-center py-12 text-red-500 text-lg">{error}</div>
@@ -69,15 +66,15 @@ export const AllCategories = () => {
                     loading="lazy"
                   />
                   <h2 className="text-3xl font-extrabold mb-3">{catLang?.name || category.name}</h2>
-                  <h3 className="text-xl font-bold mb-4">{catLang?.name || category.name}</h3>
                   <p className="text-gray-500 text-lg mb-6">
-                    {catLang?.description || (language.toLowerCase() === "fr" ? "Découvrez notre expertise." : "Discover our expertise.")}
+                    {catLang?.description ||
+                      t("allCategories.defaultDescription", "Découvrez notre expertise.")}
                   </p>
                 </div>
                 <div className="flex justify-center mt-auto">
                   <Link to={`/categorie/${category.id}/produits`}>
                     <Button className="bg-[#302082] hover:bg-[#4330b5] px-8 py-2 text-white">
-                      {language.toLowerCase() === "fr" ? "Voir les produits" : "View products"}
+                      {t("allCategories.viewProducts", "Voir les produits")}
                     </Button>
                   </Link>
                 </div>

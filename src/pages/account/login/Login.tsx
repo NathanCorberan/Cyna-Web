@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Eye, EyeOff, Facebook } from "lucide-react";
 import { useLogin } from "@/hooks/auth/useLogin";
+import { useTranslation } from "react-i18next";
 
 export const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -13,6 +14,7 @@ export const Login = () => {
   const [password, setPassword] = useState("");
   const { handleLogin, loading, error } = useLogin();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,19 +27,21 @@ export const Login = () => {
   return (
     <div className="container mx-auto px-4 py-8 max-w-md">
       <div className="bg-white rounded-md shadow p-6">
-        <h1 className="text-xl font-bold text-center mb-6">Connexion</h1>
+        <h1 className="text-xl font-bold text-center mb-6">
+          {t("login.title", "Connexion")}
+        </h1>
 
         <form className="space-y-4" onSubmit={onSubmit}>
           <div className="space-y-2">
             <label htmlFor="email" className="text-sm">
-              Email
+              {t("login.emailLabel", "Email")}
             </label>
             <div className="relative">
               <Input
                 id="email"
                 type="email"
                 className="w-full border rounded-md"
-                placeholder="Email"
+                placeholder={t("login.emailPlaceholder", "Email")}
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 autoComplete="username"
@@ -48,14 +52,14 @@ export const Login = () => {
 
           <div className="space-y-2">
             <label htmlFor="password" className="text-sm">
-              Mot de passe
+              {t("login.passwordLabel", "Mot de passe")}
             </label>
             <div className="relative">
               <Input
                 id="password"
                 type={showPassword ? "text" : "password"}
                 className="w-full border rounded-md pr-10"
-                placeholder="Mot de passe"
+                placeholder={t("login.passwordPlaceholder", "Mot de passe")}
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 autoComplete="current-password"
@@ -66,6 +70,7 @@ export const Login = () => {
                 className="absolute right-3 top-1/2 transform -translate-y-1/2"
                 onClick={() => setShowPassword(!showPassword)}
                 tabIndex={-1}
+                aria-label={showPassword ? t("login.hidePassword", "Masquer le mot de passe") : t("login.showPassword", "Afficher le mot de passe")}
               >
                 {showPassword ? (
                   <EyeOff className="h-4 w-4 text-gray-500" />
@@ -85,28 +90,28 @@ export const Login = () => {
             type="submit"
             disabled={loading}
           >
-            {loading ? "Connexion..." : "Se connecter"}
+            {loading ? t("login.loggingIn", "Connexion...") : t("login.login", "Se connecter")}
           </Button>
 
           <div className="text-center text-sm">
             <Link to="/forgot-password" className="text-[#302082] hover:underline">
-              Mot de passe oublié ?
+              {t("login.forgotPassword", "Mot de passe oublié ?")}
             </Link>
           </div>
 
           <div className="text-center text-sm">
-            <span>Pas encore inscrit ? </span>
+            <span>{t("login.notRegistered", "Pas encore inscrit ? ")} </span>
             <Link to="/register" className="text-[#302082] hover:underline">
-              Créer un compte
+              {t("login.createAccount", "Créer un compte")}
             </Link>
           </div>
 
           <div className="flex justify-center space-x-4 pt-2">
-            <Link to="#" className="rounded-full border border-gray-300 p-2">
+            <Link to="#" className="rounded-full border border-gray-300 p-2" aria-label={t("login.googleLogin", "Connexion avec Google")}>
               <span className="sr-only">Google</span>
               <div className="h-5 w-5 flex items-center justify-center">G</div>
             </Link>
-            <Link to="#" className="rounded-full border border-gray-300 p-2">
+            <Link to="#" className="rounded-full border border-gray-300 p-2" aria-label={t("login.facebookLogin", "Connexion avec Facebook")}>
               <span className="sr-only">Facebook</span>
               <Facebook className="h-5 w-5 text-blue-600" />
             </Link>

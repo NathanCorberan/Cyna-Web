@@ -5,20 +5,25 @@ import { Input } from "@/components/ui/input";
 import { User as UserIcon } from "lucide-react";
 import { useMe } from "@/hooks/auth/useMe";
 import { useAuth } from "@/hooks/auth/useAuth";
-
+import { useTranslation } from "react-i18next";
 
 export function Profile() {
   const { me, loading, error } = useMe();
-  const { logout } = useAuth(); // ← ici
+  const { logout } = useAuth();
+  const { t } = useTranslation();
 
   return (
     <div className="flex flex-col box-border">
       <div className="flex flex-1 items-center justify-center box-border">
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm w-full max-w-xl p-10 box-border">
-          <h1 className="text-2xl font-bold text-center mb-8">Paramètres du profil</h1>
+          <h1 className="text-2xl font-bold text-center mb-8">
+            {t("profile.title", "Paramètres du profil")}
+          </h1>
 
           {loading ? (
-            <div className="text-center text-gray-500 py-8">Chargement...</div>
+            <div className="text-center text-gray-500 py-8">
+              {t("profile.loading", "Chargement...")}
+            </div>
           ) : error ? (
             <div className="text-center text-destructive py-8">{error}</div>
           ) : (
@@ -30,7 +35,7 @@ export function Profile() {
                 <div className="flex-1 space-y-6">
                   <Input
                     type="text"
-                    placeholder="Nom"
+                    placeholder={t("profile.lastNamePlaceholder", "Nom")}
                     name="nom"
                     className="h-12"
                     value={me?.last_name || ""}
@@ -38,7 +43,7 @@ export function Profile() {
                   />
                   <Input
                     type="text"
-                    placeholder="Prénom"
+                    placeholder={t("profile.firstNamePlaceholder", "Prénom")}
                     name="prenom"
                     className="h-12"
                     value={me?.first_name || ""}
@@ -48,7 +53,7 @@ export function Profile() {
               </div>
               <Input
                 type="email"
-                placeholder="Email"
+                placeholder={t("profile.emailPlaceholder", "Email")}
                 name="email"
                 className="h-12"
                 value={me?.email || ""}
@@ -56,22 +61,24 @@ export function Profile() {
               />
 
               <div className="pt-2">
-                <p className="text-base mb-3 font-semibold">Changer son mot de passe</p>
+                <p className="text-base mb-3 font-semibold">
+                  {t("profile.changePasswordTitle", "Changer son mot de passe")}
+                </p>
                 <Input
                   type="password"
-                  placeholder="Mot de passe actuel"
+                  placeholder={t("profile.currentPasswordPlaceholder", "Mot de passe actuel")}
                   name="password"
                   className="mb-3 border-dashed h-12"
                 />
                 <Input
                   type="password"
-                  placeholder="Nouveau mot de passe"
+                  placeholder={t("profile.newPasswordPlaceholder", "Nouveau mot de passe")}
                   name="newPassword"
                   className="mb-3 border-dashed h-12"
                 />
                 <Input
                   type="password"
-                  placeholder="Confirmer le nouveau mot de passe"
+                  placeholder={t("profile.confirmPasswordPlaceholder", "Confirmer le nouveau mot de passe")}
                   name="confirmPassword"
                   className="border-dashed h-12"
                 />
@@ -83,7 +90,7 @@ export function Profile() {
                   onClick={logout}
                   className="bg-[#302082] hover:bg-[#3a2a9d] text-white px-8 py-3 text-base font-bold rounded-lg"
                 >
-                  Déconnexion
+                  {t("profile.logoutButton", "Déconnexion")}
                 </Button>
               </div>
             </form>

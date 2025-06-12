@@ -5,8 +5,10 @@ import { Input } from "@/components/ui/input";
 import { Eye, EyeOff, Facebook } from "lucide-react";
 import { useRegister } from "@/hooks/auth/useRegister";
 import type { RegisterCredentials } from "@/types/Register";
+import { useTranslation } from "react-i18next";
 
 export const Register = () => {
+  const { t } = useTranslation();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [form, setForm] = useState<RegisterCredentials>({
@@ -29,11 +31,12 @@ export const Register = () => {
     e.preventDefault();
     if (form.password !== confirmPassword) {
       setSuccess(null);
-      return alert("Les mots de passe ne correspondent pas");
+      alert(t("register.passwordMismatch", "Les mots de passe ne correspondent pas"));
+      return;
     }
     const response = await handleRegister(form);
     if (response) {
-      setSuccess("Inscription réussie !");
+      setSuccess(t("register.successMessage", "Inscription réussie !"));
       setTimeout(() => navigate("/login"), 1200);
     }
   };
@@ -41,15 +44,15 @@ export const Register = () => {
   return (
     <div className="container mx-auto px-4 py-8 max-w-md">
       <div className="bg-white rounded-md shadow p-6">
-        <h1 className="text-xl font-bold text-center mb-6">Créer un compte</h1>
+        <h1 className="text-xl font-bold text-center mb-6">{t("register.title", "Créer un compte")}</h1>
         <form className="space-y-4" onSubmit={onSubmit} autoComplete="off">
           <div className="space-y-2">
-            <label htmlFor="email" className="text-sm">Email</label>
+            <label htmlFor="email" className="text-sm">{t("register.emailLabel", "Email")}</label>
             <Input
               id="email"
               type="email"
               className="w-full border rounded-md"
-              placeholder="Email"
+              placeholder={t("register.emailPlaceholder", "Email")}
               value={form.email}
               onChange={onChange}
               autoComplete="username"
@@ -57,37 +60,37 @@ export const Register = () => {
             />
           </div>
           <div className="space-y-2">
-            <label htmlFor="last_name" className="text-sm">Nom</label>
+            <label htmlFor="last_name" className="text-sm">{t("register.lastNameLabel", "Nom")}</label>
             <Input
               id="last_name"
               type="text"
               className="w-full border rounded-md"
-              placeholder="Nom"
+              placeholder={t("register.lastNamePlaceholder", "Nom")}
               value={form.last_name}
               onChange={onChange}
               required
             />
           </div>
           <div className="space-y-2">
-            <label htmlFor="first_name" className="text-sm">Prénom</label>
+            <label htmlFor="first_name" className="text-sm">{t("register.firstNameLabel", "Prénom")}</label>
             <Input
               id="first_name"
               type="text"
               className="w-full border rounded-md"
-              placeholder="Prénom"
+              placeholder={t("register.firstNamePlaceholder", "Prénom")}
               value={form.first_name}
               onChange={onChange}
               required
             />
           </div>
           <div className="space-y-2">
-            <label htmlFor="password" className="text-sm">Mot de passe</label>
+            <label htmlFor="password" className="text-sm">{t("register.passwordLabel", "Mot de passe")}</label>
             <div className="relative">
               <Input
                 id="password"
                 type={showPassword ? "text" : "password"}
                 className="w-full border rounded-md pr-10"
-                placeholder="Mot de passe"
+                placeholder={t("register.passwordPlaceholder", "Mot de passe")}
                 value={form.password}
                 onChange={onChange}
                 required
@@ -107,13 +110,13 @@ export const Register = () => {
             </div>
           </div>
           <div className="space-y-2">
-            <label htmlFor="confirmPassword" className="text-sm">Confirmer le mot de passe</label>
+            <label htmlFor="confirmPassword" className="text-sm">{t("register.confirmPasswordLabel", "Confirmer le mot de passe")}</label>
             <div className="relative">
               <Input
                 id="confirmPassword"
                 type={showConfirmPassword ? "text" : "password"}
                 className="w-full border rounded-md pr-10"
-                placeholder="Confirmer le mot de passe"
+                placeholder={t("register.confirmPasswordPlaceholder", "Confirmer le mot de passe")}
                 value={confirmPassword}
                 onChange={e => setConfirmPassword(e.target.value)}
                 required
@@ -141,13 +144,13 @@ export const Register = () => {
           )}
 
           <Button type="submit" className="w-full bg-[#302082] hover:bg-[#3a2a9d]" disabled={loading}>
-            {loading ? "Création..." : "Créer mon compte"}
+            {loading ? t("register.loading", "Création...") : t("register.submit", "Créer mon compte")}
           </Button>
 
           <div className="text-center text-sm">
-            <span>Déjà inscrit ? </span>
+            <span>{t("register.alreadyHaveAccount", "Déjà inscrit ?")} </span>
             <Link to="/login" className="text-[#302082] hover:underline">
-              Se connecter
+              {t("register.loginLink", "Se connecter")}
             </Link>
           </div>
           <div className="flex justify-center space-x-4 pt-2">

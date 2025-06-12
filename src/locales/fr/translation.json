@@ -9,7 +9,34 @@
       "titleUnavailable": "Titre indisponible",
       "descriptionUnavailable": "Description indisponible"
     },
+    "newProducts": {
+      "title": "Nouveautés",
+      "viewAll": "Voir tout",
+      "item1": {
+        "alt": "Nouveauté 1",
+        "label": "NOUVEAU",
+        "title": "Collection Été 2025",
+        "description": "Découvrez notre nouvelle collection été avec des designs exclusifs et des matières premium.",
+        "linkText": "Découvrir la collection"
+      },
+      "item2": {
+        "alt": "Nouveauté 2",
+        "label": "TENDANCE",
+        "title": "Accessoires Urbains",
+        "description": "Notre nouvelle gamme d'accessoires urbains pour compléter votre style quotidien.",
+        "linkText": "Explorer la gamme"
+      },
+      "item3": {
+        "alt": "Nouveauté 3",
+        "label": "ÉCORESPONSABLE",
+        "title": "Collection Éco-Friendly",
+        "description": "Des vêtements durables fabriqués à partir de matériaux recyclés et écoresponsables.",
+        "linkText": "Voir la collection"
+      }
+    },
     "categories": {
+      "title": "Catégories",
+      "viewAll": "Voir tout",
       "loading": "Chargement des catégories...",
       "error": "Erreur lors du chargement des catégories"
     },
@@ -24,5 +51,160 @@
     "maxStock": "(max {{count}})",
     "loading": "Chargement...",
     "error": "Une erreur s'est produite"
+  },
+  "allCategories": {
+    "title": "Toutes les catégories",
+    "loading": "Chargement...",
+    "countLabel": "catégories disponibles",
+    "defaultDescription": "Découvrez notre expertise.",
+    "viewProducts": "Voir les produits"
+  },
+  "login": {
+    "title": "Connexion",
+    "emailLabel": "Email",
+    "emailPlaceholder": "Email",
+    "passwordLabel": "Mot de passe",
+    "passwordPlaceholder": "Mot de passe",
+    "showPassword": "Afficher le mot de passe",
+    "hidePassword": "Masquer le mot de passe",
+    "loggingIn": "Connexion...",
+    "login": "Se connecter",
+    "forgotPassword": "Mot de passe oublié ?",
+    "notRegistered": "Pas encore inscrit ? ",
+    "createAccount": "Créer un compte",
+    "googleLogin": "Connexion avec Google",
+    "facebookLogin": "Connexion avec Facebook"
+  },
+  "profile": {
+    "title": "Paramètres du profil",
+    "loading": "Chargement...",
+    "lastNamePlaceholder": "Nom",
+    "firstNamePlaceholder": "Prénom",
+    "emailPlaceholder": "Email",
+    "changePasswordTitle": "Changer son mot de passe",
+    "currentPasswordPlaceholder": "Mot de passe actuel",
+    "newPasswordPlaceholder": "Nouveau mot de passe",
+    "confirmPasswordPlaceholder": "Confirmer le nouveau mot de passe",
+    "logoutButton": "Déconnexion"
+  },
+  "register": {
+    "title": "Créer un compte",
+    "emailLabel": "Email",
+    "emailPlaceholder": "Email",
+    "lastNameLabel": "Nom",
+    "lastNamePlaceholder": "Nom",
+    "firstNameLabel": "Prénom",
+    "firstNamePlaceholder": "Prénom",
+    "passwordLabel": "Mot de passe",
+    "passwordPlaceholder": "Mot de passe",
+    "confirmPasswordLabel": "Confirmer le mot de passe",
+    "confirmPasswordPlaceholder": "Confirmer le mot de passe",
+    "passwordMismatch": "Les mots de passe ne correspondent pas",
+    "successMessage": "Inscription réussie !",
+    "loading": "Création...",
+    "submit": "Créer mon compte",
+    "alreadyHaveAccount": "Déjà inscrit ?",
+    "loginLink": "Se connecter"
+  },
+  "cart": {
+    "noCartFound": "Aucun panier trouvé.",
+    "loading": "Chargement du panier...",
+    "title": "Mon panier",
+    "empty": "Votre panier est vide",
+    "continueShopping": "Continuer mes achats",
+    "productAlt": "Produit {{id}}",
+    "productName": "Produit {{id}}",
+    "total": "TOTAL",
+    "subtotal": "Sous-total",
+    "shipping": "Frais de livraison",
+    "noOrderFound": "Impossible de trouver la commande associée à ce panier.",
+    "checkout": "Passer au paiement",
+    "payIn4x": "Payer en 4x",
+    "freeShippingOver50": "Frais de port offerts dès 50 €",
+    "securePayment": "Paiement sécurisé"
+  },
+  "checkout": {
+    "loadingPayment": "Chargement du paiement Stripe…"
+  },
+  "success": {
+    "paymentSuccess": "Paiement réussi 🎉",
+    "orderPaid": "Commande n°{{order}} payée et validée.",
+    "returnHome": "Retour à l'accueil"
+  },
+  "allProducts": {
+    "title": "Tous nos Produits",
+    "subtitle": "{{count}} produits disponibles",
+    "viewByCategories": "Voir par catégories",
+    "backToHome": "Retour à l'accueil"
+  },
+  "loading": "Chargement...",
+  "brand": {
+    "name": "CYNA"
+  },
+  "loading": "Chargement...",
+  "product": {
+    "notFound": "Produit introuvable",
+    "backToProducts": "Retour aux produits",
+    "status": {
+      "available": "Disponible",
+      "unavailable": "Indisponible"
+    },
+    "addToFavorites": "Ajouter aux favoris",
+    "viewImage": "Voir image {{number}}",
+    "imageNumber": "Image {{number}}",
+    "descriptionTitle": "Description",
+    "choosePlan": "Choisissez votre formule",
+    "pricing": {
+      "monthly": {
+        "label": "Abonnement mensuel",
+        "description": "Facturation mensuelle, résiliable à tout moment"
+      },
+      "yearly": {
+        "label": "Abonnement annuel",
+        "description": "Facturation annuelle, résiliable à tout moment"
+      },
+      "lifetime": {
+        "label": "Licence à vie",
+        "description": "Paiement unique, accès permanent"
+      }
+    },
+    "quantityLabel": "Quantité :",
+    "decreaseQuantity": "Diminuer",
+    "increaseQuantity": "Augmenter",
+    "maxQuantity": "(max {{count}})",
+    "stockInfo": "{{count}} unités en stock",
+    "addedToCart": "Produit ajouté au panier !",
+    "adding": "Ajout en cours...",
+    "addToCart": "Ajouter au panier",
+    "available": "Disponible",
+    "unavailable": "Indisponible"
+  },
+  "category": {
+    "loading": "Chargement de la catégorie...",
+    "loadingProducts": "Chargement des produits...",
+    "productsTitle": "Produits de la catégorie",
+    "backToCategories": "Retour aux catégories",
+    "noProducts": "Aucun produit trouvé dans cette catégorie.",
+    "defaultName": "Catégorie"
+  },
+  "subscriptions": {
+    "title": "Mes Abonnements",
+    "activeSubscriptions": "Abonnements actifs",
+    "monthlySpend": "Dépense mensuelle",
+    "startDate": "Date de début",
+    "endDate": "Date de fin",
+    "subscriptionType": "Type d'abonnement",
+    "billing": "Facturation",
+    "automatic": "Automatique",
+    "active": "Actif",
+    "invoices": "Factures",
+    "noActiveSubscriptions": "Aucun abonnement actif",
+    "discoverServices": "Découvrez nos services et trouvez l'abonnement qui vous convient.",
+    "discoverServicesButton": "Découvrir nos services",
+    "otherServices": "Découvrir d'autres services",
+    "myAccount": "Mon compte",
+    "monthly": "Mensuel",
+    "yearly": "Annuel",
+    "lifetime": "À vie"
   }
 }

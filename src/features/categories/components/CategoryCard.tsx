@@ -1,6 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import type { Category } from "@/types/Category";
+import { useTranslation } from "react-i18next";
 
 interface CategoryCardProps {
   category: Category;
@@ -16,6 +17,8 @@ function getCategoryLang(category: Category, lang = "fr") {
 }
 
 export function CategoryCard({ category, lang = "fr" }: CategoryCardProps) {
+  const { t } = useTranslation();
+
   const CATEGORY_IMAGE_BASE = "http://srv839278.hstgr.cloud:8000/assets/images/categories/";
 
   const catLang = getCategoryLang(category, lang);
@@ -38,7 +41,9 @@ export function CategoryCard({ category, lang = "fr" }: CategoryCardProps) {
             loading="lazy"
           />
           <span className="font-semibold text-lg">{catLang?.name || category.name}</span>
-          <span className="text-base text-muted-foreground">{catLang?.description || ""}</span>
+          <span className="text-base text-muted-foreground">
+            {catLang?.description || t("home.categories.loading")}
+          </span>
         </CardContent>
       </Card>
     </Link>
