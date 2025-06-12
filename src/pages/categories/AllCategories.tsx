@@ -3,12 +3,13 @@ import { Button } from "@/components/ui/button";
 import placeholder from "@/assets/placeholder.png";
 import { useCategories } from "@/hooks/categories/useCategories";
 import type { Category } from "@/types/Category";
+import { useLanguage } from "@/contexts/LanguageContext"; // Import du contexte
 
 // Helper pour trouver la langue demandée ou fallback
 function getCategoryLang(category: Category, lang = "fr") {
   return (
-    category.categoryLanguages.find(l => l.code === lang) ||
-    category.categoryLanguages.find(l => l.code === "fr") ||
+    category.categoryLanguages.find(l => l.code.toLowerCase() === lang.toLowerCase()) ||
+    category.categoryLanguages.find(l => l.code.toLowerCase() === "fr") ||
     category.categoryLanguages[0]
   );
 }
@@ -16,26 +17,38 @@ function getCategoryLang(category: Category, lang = "fr") {
 // Le chemin de base de tes images catégories
 const CATEGORY_IMAGE_BASE = "http://srv839278.hstgr.cloud:8000/assets/images/categories/";
 
-export const AllCategories = ({ lang = "fr" }: { lang?: string }) => {
+export const AllCategories = () => {
+  const { language } = useLanguage(); // Récupération de la langue active
+
   const { categories, loading, error } = useCategories();
 
   return (
     <div className="w-full px-2 sm:px-6 py-8 min-h-screen bg-white">
       <div className="text-center mb-12">
-        <h1 className="text-3xl font-bold text-[#302082] mb-4">Toutes les catégories</h1>
+        <h1 className="text-3xl font-bold text-[#302082] mb-4">
+          {language.toLowerCase() === "fr" ? "Toutes les catégories" : "All Categories"}
+        </h1>
         <p className="text-gray-600">
-          {loading ? "Chargement..." : categories.length + " catégories disponibles"}
+          {loading
+            ? language.toLowerCase() === "fr"
+              ? "Chargement..."
+              : "Loading..."
+            : `${categories.length} ${
+                language.toLowerCase() === "fr" ? "catégories disponibles" : "categories available"
+              }`}
         </p>
       </div>
 
       {loading ? (
-        <div className="flex justify-center py-12 text-gray-400 text-lg">Chargement...</div>
+        <div className="flex justify-center py-12 text-gray-400 text-lg">
+          {language.toLowerCase() === "fr" ? "Chargement..." : "Loading..."}
+        </div>
       ) : error ? (
         <div className="flex justify-center py-12 text-red-500 text-lg">{error}</div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-4xl mx-auto">
           {categories.map((category) => {
-            const catLang = getCategoryLang(category, lang);
+            const catLang = getCategoryLang(category, language);
             const imageUrl = category.imageLink
               ? CATEGORY_IMAGE_BASE + category.imageLink
               : placeholder;
@@ -55,21 +68,16 @@ export const AllCategories = ({ lang = "fr" }: { lang?: string }) => {
                     style={{ width: 120, height: 120 }}
                     loading="lazy"
                   />
-                  <h2 className="text-3xl font-extrabold mb-3">
-                    {catLang?.name || category.name}
-                  </h2>
-                  {/* On peut garder le nom en sous-titre, ou l’enlever si tu veux */}
-                  <h3 className="text-xl font-bold mb-4">
-                    {catLang?.name || category.name}
-                  </h3>
+                  <h2 className="text-3xl font-extrabold mb-3">{catLang?.name || category.name}</h2>
+                  <h3 className="text-xl font-bold mb-4">{catLang?.name || category.name}</h3>
                   <p className="text-gray-500 text-lg mb-6">
-                    {catLang?.description || "Découvrez notre expertise."}
+                    {catLang?.description || (language.toLowerCase() === "fr" ? "Découvrez notre expertise." : "Discover our expertise.")}
                   </p>
                 </div>
                 <div className="flex justify-center mt-auto">
                   <Link to={`/categorie/${category.id}/produits`}>
                     <Button className="bg-[#302082] hover:bg-[#4330b5] px-8 py-2 text-white">
-                      Voir les produits
+                      {language.toLowerCase() === "fr" ? "Voir les produits" : "View products"}
                     </Button>
                   </Link>
                 </div>

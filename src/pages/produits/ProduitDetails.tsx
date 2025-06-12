@@ -7,18 +7,18 @@ import { Badge } from "@/components/ui/badge";
 import placeholder from "@/assets/placeholder.png";
 import { Heart, ShoppingCart, ArrowLeft, Check, Minus, Plus } from "lucide-react";
 import { useAddToCart } from "@/hooks/carts/useAddToCart";
-import { getAllTokens } from "@/lib/utils"; // <-- importe ici
+import { getAllTokens } from "@/lib/utils";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function ProductDetail() {
   const { id } = useParams<{ id: string }>();
   const { product, loading, error } = useProductById(id!);
+  const { language } = useLanguage();
 
-  // États pour le pricing, l’image sélectionnée et la quantité
   const [selectedPricing, setSelectedPricing] = useState<number>(0);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [cartQty, setCartQty] = useState<number>(1);
 
-  // HOOK pour ajout panier
   const { addToCart, loading: addLoading, error: addError, orderItem } = useAddToCart();
   const PRODUITS_IMAGE_BASE = "http://srv839278.hstgr.cloud:8000/assets/images/products/";
 
@@ -42,13 +42,13 @@ export default function ProductDetail() {
   };
 
   if (loading) {
-    return <div className="flex justify-center py-12 text-gray-400 text-lg">Chargement...</div>;
+    return <div className="flex justify-center py-12 text-gray-400 text-lg" data-i18n="loading">Chargement...</div>;
   }
   if (error || !product) {
-    return <div className="flex justify-center py-12 text-red-500 text-lg">{error || "Produit introuvable"}</div>;
+    return <div className="flex justify-center py-12 text-red-500 text-lg" data-i18n="error">{error || "Produit introuvable"}</div>;
   }
 
-  const productLang = product.productLangages.find(l => l.code === "FR") || product.productLangages[0];
+  const productLang = product.productLangages.find(l => l.code.toLowerCase() === language.toLowerCase()) || product.productLangages[0];
   const images = product.productImages.length ? product.productImages : [{ image_link: placeholder, id: 0, name: "" }];
   const pricing = product.subscriptionTypes;
   const quantity = product.available_stock;
@@ -58,33 +58,28 @@ export default function ProductDetail() {
 
   return (
     <div className="min-h-screen">
-      {/* Header avec logo circulaire */}
       <header className="bg-white">
         <div className="container mx-auto px-6 py-6">
           <div className="flex justify-center">
             <Link to="/" className="flex items-center">
               <div className="w-20 h-20 rounded-full bg-[#302082] flex items-center justify-center border-4 border-white shadow-lg">
-                <span className="text-white font-bold text-xl">CYNA</span>
+                <span className="text-white font-bold text-xl" data-i18n="brand.name">CYNA</span>
               </div>
             </Link>
           </div>
         </div>
       </header>
 
-      {/* Contenu principal */}
       <main className="container mx-auto px-6 py-8">
-        {/* Bouton retour */}
         <div className="mb-6">
-          <Link to="/produits" className="inline-flex items-center gap-2 text-[#302082] hover:underline">
+          <Link to="/produits" className="inline-flex items-center gap-2 text-[#302082] hover:underline" data-i18n="product.backToProducts">
             <ArrowLeft className="h-4 w-4" />
             Retour aux produits
           </Link>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
-          {/* Section Images */}
           <div className="space-y-4">
-            {/* Image principale */}
             <div className="relative aspect-square bg-white rounded-2xl overflow-hidden border border-gray-200 shadow-sm">
               <img
                 src={images[selectedImageIndex]?.image_link.startsWith("http")
@@ -93,23 +88,22 @@ export default function ProductDetail() {
                 alt={productLang?.name}
                 className="object-cover w-full h-full"
               />
-              {/* Badge statut */}
               <div className="absolute top-4 left-4">
-                <Badge className={`${status === "Disponible" ? "bg-green-500" : "bg-red-500"} text-white`}>
+                <Badge className={`${status === "Disponible" ? "bg-green-500" : "bg-red-500"} text-white`} data-i18n="product.status">
                   {status}
                 </Badge>
               </div>
-              {/* Favori */}
               <Button
                 variant="ghost"
                 size="icon"
                 className="absolute top-4 right-4 bg-white/90 hover:bg-white rounded-full shadow-sm"
+                aria-label="Ajouter aux favoris"
+                title="Ajouter aux favoris"
               >
                 <Heart className="h-5 w-5" />
               </Button>
             </div>
 
-            {/* Miniatures */}
             {images.length > 1 && (
               <div className="flex gap-3">
                 {images.map((image, index) => (
@@ -121,6 +115,7 @@ export default function ProductDetail() {
                         ? "border-[#302082] ring-2 ring-[#302082]/20"
                         : "border-gray-200 hover:border-gray-300"
                     }`}
+                    aria-label={`Voir image ${index + 1}`}
                   >
                     <img
                       src={
@@ -142,13 +137,12 @@ export default function ProductDetail() {
           <div className="space-y-6">
             <div>
               <div className="flex items-center gap-3 mb-2">
-                <h1 className="text-3xl font-bold text-gray-900">{productLang?.name}</h1>
+                <h1 className="text-3xl font-bold text-gray-900" data-i18n="product.name">{productLang?.name}</h1>
               </div>
             </div>
 
-            {/* Description */}
             <div className="space-y-3">
-              <h3 className="text-lg font-semibold text-gray-900">Description</h3>
+              <h3 className="text-lg font-semibold text-gray-900" data-i18n="product.descriptionTitle">Description</h3>
               <div className="prose prose-sm max-w-none text-gray-600">
                 {formattedDescription.map((paragraph, index) => (
                   <p key={index} className="mb-2">{paragraph.replace(/\*/g, "")}</p>
@@ -156,12 +150,10 @@ export default function ProductDetail() {
               </div>
             </div>
 
-            {/* Options de prix */}
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-gray-900">Choisissez votre formule</h3>
+              <h3 className="text-lg font-semibold text-gray-900" data-i18n="product.choosePlan">Choisissez votre formule</h3>
               <div className="grid gap-3">
                 {pricing.map((option, idx) => {
-                  // Centralise le mapping pour labels et descriptions
                   const type = option.type?.toLowerCase();
                   let label = "";
                   let description = "";
@@ -194,6 +186,9 @@ export default function ProductDetail() {
                           : "hover:border-gray-300"
                       }`}
                       onClick={() => setSelectedPricing(idx)}
+                      tabIndex={0}
+                      role="button"
+                      aria-pressed={selectedPricing === idx}
                     >
                       <CardContent className="p-4">
                         <div className="flex items-center justify-between">
@@ -208,8 +203,8 @@ export default function ProductDetail() {
                               )}
                             </div>
                             <div>
-                              <div className="font-medium capitalize">{label}</div>
-                              <div className="text-sm text-gray-600">{description}</div>
+                              <div className="font-medium capitalize" data-i18n={`product.pricing.${type}.label`}>{label}</div>
+                              <div className="text-sm text-gray-600" data-i18n={`product.pricing.${type}.description`}>{description}</div>
                             </div>
                           </div>
                           <div className="text-right">
@@ -225,8 +220,7 @@ export default function ProductDetail() {
               </div>
             </div>
 
-            {/* Sélecteur de quantité moderne */}
-            <div className="flex items-center gap-3 my-2">
+            <div className="flex items-center gap-3 my-2" data-i18n="product.quantityLabel">
               <span className="text-gray-700 font-medium">Quantité :</span>
               <div className="flex items-center border rounded-lg px-3 py-1 bg-white" style={{ minWidth: 110 }}>
                 <button
@@ -249,26 +243,24 @@ export default function ProductDetail() {
                   <Plus className="w-4 h-4" />
                 </button>
               </div>
-              <span className="text-xs text-gray-400 ml-2">(max {quantity})</span>
+              <span className="text-xs text-gray-400 ml-2" data-i18n="product.maxQuantity">(max {quantity})</span>
             </div>
 
-            {/* Stock */}
-            <div className="flex items-center gap-2 p-3 bg-green-50 rounded-lg border border-green-200">
+            <div className="flex items-center gap-2 p-3 bg-green-50 rounded-lg border border-green-200" data-i18n="product.stockInfo">
               <Check className="h-5 w-5 text-green-600" />
               <span className="text-green-800 font-medium">{quantity} unités en stock</span>
             </div>
 
-            {/* Feedback Ajout */}
             {addError && <div className="text-red-600 bg-red-50 rounded px-3 py-2">{addError}</div>}
-            {orderItem && <div className="text-green-700 bg-green-50 rounded px-3 py-2">Produit ajouté au panier !</div>}
+            {orderItem && <div className="text-green-700 bg-green-50 rounded px-3 py-2" data-i18n="product.addedToCart">Produit ajouté au panier !</div>}
 
-            {/* Bouton d'achat */}
             <div className="space-y-3">
               <Button
                 className="w-full bg-[#302082] hover:bg-[#3a2a9d] text-white py-3 text-lg font-semibold"
                 size="lg"
                 onClick={handleAddToCart}
                 disabled={addLoading}
+                aria-live="polite"
               >
                 <ShoppingCart className="h-5 w-5 mr-2" />
                 {addLoading ? "Ajout en cours..." : (
