@@ -9,18 +9,15 @@ interface CategoryCardProps {
 
 function getCategoryLang(category: Category, lang = "fr") {
   return (
-    category.categoryLanguages.find(l => l.code === lang) ||
+    category.categoryLanguages.find(l => l.code.toLowerCase() === lang.toLowerCase()) ||
     category.categoryLanguages.find(l => l.code === "fr") ||
     category.categoryLanguages[0]
   );
 }
 
 export function CategoryCard({ category, lang = "fr" }: CategoryCardProps) {
-  // Fallback pour l'image (si lien brut, à adapter à ton CDN ou chemin public)
   const CATEGORY_IMAGE_BASE = "http://srv839278.hstgr.cloud:8000/assets/images/categories/";
-  
 
-  // Prendre les infos dynamiques depuis la BDD (API)
   const catLang = getCategoryLang(category, lang);
 
   return (
@@ -40,16 +37,8 @@ export function CategoryCard({ category, lang = "fr" }: CategoryCardProps) {
             className="h-20 w-20 rounded-full object-cover bg-muted mb-2"
             loading="lazy"
           />
-          <span className="font-extrabold text-2xl">
-            {catLang?.name || category.name}
-          </span>
-          <span className="font-semibold text-lg">
-            {/* Affiche le titre custom (optionnel), sinon le nom */}
-            {catLang?.name || category.name}
-          </span>
-          <span className="text-base text-muted-foreground">
-            {catLang?.description || ""}
-          </span>
+          <span className="font-semibold text-lg">{catLang?.name || category.name}</span>
+          <span className="text-base text-muted-foreground">{catLang?.description || ""}</span>
         </CardContent>
       </Card>
     </Link>

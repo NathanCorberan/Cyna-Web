@@ -8,6 +8,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn, isAuthenticated, logout } from "@/lib/utils";
 
 import cynaLogo from "@/assets/Cyna_logo.png";
+import { useLanguage } from "@/contexts/LanguageContext";  // <-- Import du contexte
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -15,6 +16,9 @@ export default function Header() {
   const location = useLocation();
   const navigate = useNavigate();
   const pathname = location.pathname;
+
+  // Utilise le contexte global de langue
+  const { language, setLanguage } = useLanguage();
 
   useEffect(() => {
     const handleStorage = () => setAuth(isAuthenticated());
@@ -25,6 +29,11 @@ export default function Header() {
   useEffect(() => {
     setAuth(isAuthenticated());
   }, [location]);
+
+  // Change la langue dans le contexte global
+  const toggleLang = () => {
+    setLanguage(language.toLowerCase() === "fr" ? "en" : "fr");
+  };
 
   const handleLogout = () => {
     logout();
@@ -42,14 +51,27 @@ export default function Header() {
 
         <div className="flex items-center space-x-1 sm:space-x-2 flex-shrink-0">
           {/* Barre de recherche desktop uniquement */}
-          <div className="relative hidden md:block">
+          <div className="relative hidden md:flex items-center space-x-2">
             <Input
               type="search"
-              placeholder="Rechercher..."
-              className="h-8 w-64 rounded-sm bg-white text-white text-sm pl-2 pr-8"
+              placeholder={language.toLowerCase() === "fr" ? "Rechercher..." : "Search..."}
+              className="h-8 w-64 rounded-sm bg-white text-black text-sm pl-2 pr-8"
             />
-            <Search className="absolute right-2 top-1.5 h-4 w-4 text-white-500" />
+            <Search className="absolute right-2 top-1.5 h-4 w-4 text-gray-400" />
           </div>
+
+          {/* Bouton changement langue */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleLang}
+            aria-label="Changer la langue"
+            title={`Changer la langue (${language.toLowerCase() === "fr" ? "EN" : "FR"})`}
+            className="text-xl select-none"
+          >
+            {language.toLowerCase() === "fr" ? "🇫🇷" : "🇬🇧"}
+          </Button>
+
           {/* Icônes */}
           <NavLink to="/cart" className="p-1">
             <ShoppingCart className="h-5 w-5" />
@@ -76,7 +98,7 @@ export default function Header() {
                 <div className="relative">
                   <Input
                     type="search"
-                    placeholder="Rechercher..."
+                    placeholder={language.toLowerCase() === "fr" ? "Rechercher..." : "Search..."}
                     className="h-8 w-full rounded-sm bg-white text-black text-sm pl-2 pr-8"
                   />
                   <Search className="absolute right-2 top-1.5 h-4 w-4 text-[#302082]" />
@@ -84,51 +106,66 @@ export default function Header() {
               </div>
               <div className="flex items-center justify-between px-4 py-2">
                 <span className="text-3xl font-bold">Menu</span>
+                {/* Bouton langue dans menu mobile */}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={toggleLang}
+                  aria-label="Changer la langue"
+                  title={`Changer la langue (${language.toLowerCase() === "fr" ? "FR" : "EN"})`}
+                  className="text-xl select-none"
+                >
+                  {language.toLowerCase() === "fr" ? "🇫🇷" : "en"}
+                </Button>
               </div>
               <hr className="mb-2 border-white/50 mx-6" />
               <nav className="flex flex-col">
-                <NavLink to="/categories"
+                <NavLink
+                  to="/categories"
                   className={cn(
                     "px-4 py-3 hover:bg-[#3a2a9d] transition-colors",
-                    pathname === "/categories" && "bg-[#3a2a9d]",
+                    pathname === "/categories" && "bg-[#3a2a9d]"
                   )}
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  Catégories
+                  {language.toLowerCase() === "fr" ? "Catégories" : "Categories"}
                 </NavLink>
-                <NavLink to="/produits"
+                <NavLink
+                  to="/produits"
                   className={cn(
                     "px-4 py-3 hover:bg-[#3a2a9d] transition-colors",
-                    pathname === "/produits" && "bg-[#3a2a9d]",
+                    pathname === "/produits" && "bg-[#3a2a9d]"
                   )}
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  Produits
+                  {language.toLowerCase() === "fr" ? "Produits" : "Products"}
                 </NavLink>
-                <NavLink to="/abonnements"
+                <NavLink
+                  to="/abonnements"
                   className={cn(
                     "px-4 py-3 hover:bg-[#3a2a9d] transition-colors",
-                    pathname === "/abonnements" && "bg-[#3a2a9d]",
+                    pathname === "/abonnements" && "bg-[#3a2a9d]"
                   )}
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  Mes abonnements
+                  {language.toLowerCase() === "fr" ? "Mes abonnements" : "My subscriptions"}
                 </NavLink>
-                <NavLink to="/checkout"
+                <NavLink
+                  to="/checkout"
                   className={cn(
                     "px-4 py-3 hover:bg-[#3a2a9d] transition-colors",
-                    pathname === "/checkout" && "bg-[#3a2a9d]",
+                    pathname === "/checkout" && "bg-[#3a2a9d]"
                   )}
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  Commandes
+                  {language.toLowerCase() === "fr" ? "Commandes" : "Orders"}
                 </NavLink>
                 {auth && (
                   <button
                     onClick={handleLogout}
                     className="px-4 py-3 hover:bg-[#3a2a9d] text-left transition-colors flex items-center"
                   >
-                    <LogOut className="h-5 w-5 mr-2" /> Se déconnecter
+                    <LogOut className="h-5 w-5 mr-2" /> {language.toLowerCase() === "fr" ? "Se déconnecter" : "Logout"}
                   </button>
                 )}
               </nav>
@@ -137,6 +174,5 @@ export default function Header() {
         </div>
       </div>
     </header>
-
   );
 }
