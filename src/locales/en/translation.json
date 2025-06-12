@@ -1,0 +1,28 @@
+{
+  "home": {
+    "carousel": {
+      "loading": "Loading carousel...",
+      "error": "Error loading carousel",
+      "slidePrevious": "Previous slide",
+      "slideNext": "Next slide",
+      "goToSlide": "Go to slide {{number}}",
+      "titleUnavailable": "Title unavailable",
+      "descriptionUnavailable": "Description unavailable"
+    },
+    "categories": {
+      "loading": "Loading categories...",
+      "error": "Error loading categories"
+    },
+    "topProducts": {
+      "title": "Trending now",
+      "loading": "Loading products...",
+      "error": "Error loading products",
+      "available": "Available",
+      "unavailable": "Unavailable"
+    },
+    "quantity": "Quantity",
+    "maxStock": "(max {{count}})",
+    "loading": "Loading...",
+    "error": "An error occurred"
+  }
+}

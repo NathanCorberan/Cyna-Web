@@ -1,0 +1,28 @@
+{
+  "home": {
+    "carousel": {
+      "loading": "Chargement du carrousel...",
+      "error": "Erreur lors du chargement du carrousel",
+      "slidePrevious": "Slide précédente",
+      "slideNext": "Slide suivante",
+      "goToSlide": "Aller au slide {{number}}",
+      "titleUnavailable": "Titre indisponible",
+      "descriptionUnavailable": "Description indisponible"
+    },
+    "categories": {
+      "loading": "Chargement des catégories...",
+      "error": "Erreur lors du chargement des catégories"
+    },
+    "topProducts": {
+      "title": "Top du moment",
+      "loading": "Chargement des produits...",
+      "error": "Erreur lors du chargement des produits",
+      "available": "Disponible",
+      "unavailable": "Indisponible"
+    },
+    "quantity": "Quantité",
+    "maxStock": "(max {{count}})",
+    "loading": "Chargement...",
+    "error": "Une erreur s'est produite"
+  }
+}

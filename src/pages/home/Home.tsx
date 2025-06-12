@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Link } from "react-router-dom";
-import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCategories } from "@/hooks/categories/useCategories";
 import { CategoriesGrid } from "@/features/categories/components/CategoriesGrid";
@@ -9,11 +9,14 @@ import { CategoriesGridSkeleton } from "@/features/categories/components/Categor
 import placeholder from "@/assets/placeholder.png";
 import { useCarousels } from "@/hooks/carousel/useCarousel";
 import { useTopProducts } from "@/hooks/products/useTopProducts";
+import { useTranslation } from "react-i18next";
 
 const PRODUITS_IMAGE_BASE = "http://srv839278.hstgr.cloud:8000/assets/images/products/";
 
 function ProductCard({ product }: { product: any }) {
   const { language } = useLanguage();
+  const { t } = useTranslation();
+
   const langItem =
     product.productLangages?.find((l) => l.code.toLowerCase() === language.toLowerCase()) ||
     product.productLangages?.[0];
@@ -70,7 +73,7 @@ function ProductCard({ product }: { product: any }) {
                 "text-xs font-semibold " + (inStock ? "text-green-600" : "text-red-500")
               }
             >
-              {inStock ? "Disponible" : "Indisponible"}
+              {inStock ? t("home.topProducts.available") : t("home.topProducts.unavailable")}
             </span>
           </div>
         </div>
@@ -81,6 +84,7 @@ function ProductCard({ product }: { product: any }) {
 
 export const Home = () => {
   const { language } = useLanguage();
+  const { t } = useTranslation();
 
   const { categories, loading, error } = useCategories();
   const { carousels, loading: loadingCarousels, error: errorCarousels } = useCarousels();
@@ -103,17 +107,17 @@ export const Home = () => {
       <div className="relative w-full h-[180px] sm:h-[260px] md:h-[320px] lg:h-[380px] rounded-lg overflow-hidden mb-10">
         {loadingCarousels ? (
           <div className="flex items-center justify-center w-full h-full bg-gray-100">
-            Chargement du carrousel...
+            {t("home.carousel.loading")}
           </div>
         ) : errorCarousels ? (
           <div className="flex items-center justify-center w-full h-full bg-red-50 text-red-600">
-            {errorCarousels}
+            {t("home.carousel.error")}
           </div>
         ) : panelsCount > 0 ? (
           <>
             <img
               src={currentCarousel?.image_link || placeholder}
-              alt={langCarousel?.title || "Banner"}
+              alt={langCarousel?.title || t("home.carousel.titleUnavailable")}
               className="object-cover w-full h-full"
             />
             <div className="absolute inset-0 flex items-center justify-between px-4 z-10">
@@ -122,7 +126,7 @@ export const Home = () => {
                 size="icon"
                 className="bg-white/20 backdrop-blur-sm rounded-full"
                 onClick={goLeft}
-                aria-label="Slide précédente"
+                aria-label={t("home.carousel.slidePrevious")}
               >
                 <ChevronLeft className="h-6 w-6" />
               </Button>
@@ -131,7 +135,7 @@ export const Home = () => {
                 size="icon"
                 className="bg-white/20 backdrop-blur-sm rounded-full"
                 onClick={goRight}
-                aria-label="Slide suivante"
+                aria-label={t("home.carousel.slideNext")}
               >
                 <ChevronRight className="h-6 w-6" />
               </Button>
@@ -143,16 +147,16 @@ export const Home = () => {
                   className={`h-2 w-8 rounded-full transition-colors ${
                     i === activePanel ? "bg-[#302082]" : "bg-gray-300"
                   }`}
-                  aria-label={`Aller au slide ${i + 1}`}
+                  aria-label={t("home.carousel.goToSlide", { number: i + 1 })}
                   onClick={() => setActivePanel(i)}
                 />
               ))}
             </div>
             <div className="absolute bottom-8 left-8 text-white z-10">
               <h2 className="text-2xl font-bold text-orange-400">
-                {langCarousel?.title || "Titre indisponible"}
+                {langCarousel?.title || t("home.carousel.titleUnavailable")}
               </h2>
-              <p className="text-lg">{langCarousel?.description || "Description indisponible"}</p>
+              <p className="text-lg">{langCarousel?.description || t("home.carousel.descriptionUnavailable")}</p>
             </div>
             <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/30 pointer-events-none" />
           </>
@@ -168,19 +172,18 @@ export const Home = () => {
       {loading ? (
         <CategoriesGridSkeleton />
       ) : error ? (
-        <div className="mb-10 text-destructive text-center">{error}</div>
+        <div className="mb-10 text-destructive text-center">{t("home.categories.error")}</div>
       ) : (
-        // Passe la langue en prop ici
         <CategoriesGrid categories={categories} lang={language} />
       )}
 
       {/* TOP DU MOMENT */}
       <div className="w-full mb-10">
-        <h2 className="text-xl font-bold mb-4">Top du moment</h2>
+        <h2 className="text-xl font-bold mb-4">{t("home.topProducts.title")}</h2>
         {loadingTopProducts ? (
-          <div className="text-center text-gray-500">Chargement des produits...</div>
+          <div className="text-center text-gray-500">{t("home.topProducts.loading")}</div>
         ) : errorTopProducts ? (
-          <div className="text-destructive text-center mb-6">{errorTopProducts}</div>
+          <div className="text-destructive text-center mb-6">{t("home.topProducts.error")}</div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6 gap-6 md:gap-8">
             {topProducts.map((product) => (
