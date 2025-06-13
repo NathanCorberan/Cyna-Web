@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
-import { Minus, Plus } from "lucide-react";
 import { useCart } from "@/hooks/carts/useCart";
 import { useCartQuantityActions } from "@/hooks/carts/useCartQuantityActions";
-import placeholder from "@/assets/placeholder.png";
+import { CartItem } from "@/features/cart/components/CartItem";
 import { getAllTokens } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 
@@ -111,55 +110,14 @@ export const Cart = () => {
       <div className="grid md:grid-cols-3 gap-8">
         <div className="md:col-span-2 space-y-4">
           {cart.member.map((item: any) => (
-            <div key={item.id} className="border rounded-md p-4 flex items-center gap-4">
-              <div className="w-20 h-20 bg-gray-100 flex-shrink-0 flex items-center justify-center overflow-hidden rounded">
-                <img
-                  src={placeholder}
-                  alt={t("cart.productAlt", { id: item.product.replace("/api/products/", "") })}
-                  width={80}
-                  height={80}
-                  className="object-cover"
-                  style={{ width: 80, height: 80 }}
-                />
-              </div>
-              <div className="flex-grow">
-                <h3 className="font-medium">{t("cart.productName", { id: item.product.replace("/api/products/", "") })}</h3>
-                <div className="text-sm text-gray-500 mt-1">{parseFloat(item.unitPrice).toFixed(2)} €</div>
-              </div>
-              <div className="flex items-center border rounded-md bg-white px-1 py-0">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 p-0"
-                  onClick={() => handleDecrement(item.id)}
-                  disabled={loadingId === item.id}
-                >
-                  <Minus className="h-4 w-4" />
-                </Button>
-                <input
-                  type="number"
-                  value={quantities[item.id] ?? item.quantity}
-                  className="w-8 h-8 appearance-none bg-transparent text-center text-black border-none outline-none focus:ring-0 focus-visible:ring-0"
-                  min="1"
-                  readOnly
-                  style={{ margin: 0, padding: 0 }}
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 p-0"
-                  onClick={() => handleIncrement(item.id)}
-                  disabled={loadingId === item.id}
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </div>
-              <div className="text-right font-medium w-20">
-                {(parseFloat(item.unitPrice) * (quantities[item.id] ?? item.quantity)).toFixed(2)} €
-              </div>
-            </div>
+            <CartItem
+              key={item.id}
+              item={item}
+              quantity={quantities[item.id] ?? item.quantity}
+              loadingId={loadingId}
+              onDecrement={handleDecrement}
+              onIncrement={handleIncrement}
+            />
           ))}
           {quantityError && (
             <div className="text-red-500 text-xs mt-2">{quantityError}</div>

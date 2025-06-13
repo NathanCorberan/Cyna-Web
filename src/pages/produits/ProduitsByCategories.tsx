@@ -8,6 +8,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useTranslation } from "react-i18next";
 
 const PRODUITS_IMAGE_BASE = "http://srv839278.hstgr.cloud:8000/assets/images/products/";
+const CATEGORY_IMAGE_BASE = "http://srv839278.hstgr.cloud:8000/assets/images/categories/";
 
 function safeFindLang(items: any[], langCode: string) {
   if (!items) return null;
@@ -51,10 +52,7 @@ export const ProduitsByCategories = () => {
           <>
             <img
               src={
-                category?.imageLink
-                  ? (category.imageLink.startsWith("http")
-                      ? category.imageLink
-                      : PRODUITS_IMAGE_BASE + category.imageLink)
+                category?.imageLink ? (category.imageLink ? CATEGORY_IMAGE_BASE + category.imageLink: placeholder)
                   : placeholder
               }
               alt={langCategory?.name || category?.name || t("category.defaultName", "Catégorie")}

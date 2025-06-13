@@ -188,23 +188,27 @@
     "defaultName": "Catégorie"
   },
   "subscriptions": {
+    "loading": "Chargement de vos abonnements...",
     "title": "Mes Abonnements",
     "activeSubscriptions": "Abonnements actifs",
     "monthlySpend": "Dépense mensuelle",
+    "active": "Actif",
     "startDate": "Date de début",
     "endDate": "Date de fin",
     "subscriptionType": "Type d'abonnement",
+    "monthly": "Mensuel",
+    "yearly": "Annuel",
+    "lifetime": "À vie",
     "billing": "Facturation",
     "automatic": "Automatique",
-    "active": "Actif",
     "invoices": "Factures",
     "noActiveSubscriptions": "Aucun abonnement actif",
     "discoverServices": "Découvrez nos services et trouvez l'abonnement qui vous convient.",
     "discoverServicesButton": "Découvrir nos services",
     "otherServices": "Découvrir d'autres services",
     "myAccount": "Mon compte",
-    "monthly": "Mensuel",
-    "yearly": "Annuel",
-    "lifetime": "À vie"
+    "monthlyPeriod": "par mois",
+    "yearlyPeriod": "par an",
+    "lifetimePeriod": "à vie"
   }
 }

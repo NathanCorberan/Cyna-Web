@@ -187,23 +187,27 @@
     "defaultName": "Category"
   },
   "subscriptions": {
+    "loading": "Loading your subscriptions...",
     "title": "My Subscriptions",
     "activeSubscriptions": "Active subscriptions",
     "monthlySpend": "Monthly spend",
+    "active": "Active",
     "startDate": "Start date",
     "endDate": "End date",
     "subscriptionType": "Subscription type",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "lifetime": "Lifetime",
     "billing": "Billing",
     "automatic": "Automatic",
-    "active": "Active",
     "invoices": "Invoices",
     "noActiveSubscriptions": "No active subscriptions",
     "discoverServices": "Discover our services and find the subscription that suits you.",
     "discoverServicesButton": "Discover our services",
     "otherServices": "Discover other services",
     "myAccount": "My account",
-    "monthly": "Monthly",
-    "yearly": "Yearly",
-    "lifetime": "Lifetime"
+    "monthlyPeriod": "per month",
+    "yearlyPeriod": "per year",
+    "lifetimePeriod": "lifetime"
   }
 }
