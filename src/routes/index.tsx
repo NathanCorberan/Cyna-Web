@@ -21,6 +21,7 @@ import AdminCategoriesPage from "@/pages/admin/categories/CategoriesAdmin";
 import ProductsAdmin from "@/pages/admin/produits/ProductsAdmin";
 import NewProductPage from "@/pages/admin/produits/NewProductPage"
 import OrdersPage from "@/pages/admin/orders/OrdersPage";
+import { UsersPage } from "@/pages/admin/users/UsersPage";
 
 export const routes: RouteObject[] = [
   {
@@ -110,7 +111,12 @@ export const routes: RouteObject[] = [
       {
         path: "orders",
         element: <OrdersPage />
+      },
+      {
+        path: "users",
+        element: <UsersPage />
       }
+
       
       // Autres pages admin :
       // { path: "products", element: <AdminProducts /> },
