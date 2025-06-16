@@ -101,7 +101,7 @@ export const Cart = () => {
     (sum: number, item: any) => sum + parseFloat(item.unitPrice) * (quantities[item.id] ?? item.quantity),
     0
   );
-  const shipping = 4.99;
+  const shipping = 0.00;
   const total = subtotal + shipping;
 
   return (

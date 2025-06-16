@@ -102,15 +102,9 @@ export const HistoriqueCheckoutPage = () => {
                             </div>
                           </div>
                           <div className="mb-4">
-                            <h4 className="font-semibold text-gray-900 mb-2">Adresse de livraison</h4>
+                            <h4 className="font-semibold text-gray-900 mb-2">Adresse de facturation</h4>
                             <p className="text-base text-gray-600">—</p>
                           </div>
-                          {order.trackingNumber && (
-                            <div className="mb-4">
-                              <h4 className="font-semibold text-gray-900 mb-2">Suivi de colis</h4>
-                              <p className="text-base text-gray-600 font-mono">{order.trackingNumber}</p>
-                            </div>
-                          )}
                           <div className="flex flex-wrap gap-4 pt-4 border-t border-gray-200 mt-6">
                             <Button variant="outline" size="sm" className="flex items-center gap-2">
                               <Eye className="h-4 w-4" /> Voir détails
@@ -118,16 +112,6 @@ export const HistoriqueCheckoutPage = () => {
                             <Button variant="outline" size="sm" className="flex items-center gap-2">
                               <Download className="h-4 w-4" /> Facture
                             </Button>
-                            {order.status === "payed" && (
-                              <Button variant="outline" size="sm" className="flex items-center gap-2">
-                                <Package className="h-4 w-4" /> Retourner
-                              </Button>
-                            )}
-                            {order.trackingNumber && (
-                              <Button variant="outline" size="sm" className="flex items-center gap-2">
-                                <Truck className="h-4 w-4" /> Suivre le colis
-                              </Button>
-                            )}
                           </div>
                         </div>
                       </div>

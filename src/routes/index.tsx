@@ -20,6 +20,7 @@ import AdminLayout from "@/layouts/AdminLayout"
 import AdminCategoriesPage from "@/pages/admin/categories/CategoriesAdmin";
 import ProductsAdmin from "@/pages/admin/produits/ProductsAdmin";
 import NewProductPage from "@/pages/admin/produits/NewProductPage"
+import OrdersPage from "@/pages/admin/orders/OrdersPage";
 
 export const routes: RouteObject[] = [
   {
@@ -106,6 +107,10 @@ export const routes: RouteObject[] = [
         path: "produits/:id",
         element: <NewProductPage />
       },
+      {
+        path: "orders",
+        element: <OrdersPage />
+      }
       
       // Autres pages admin :
       // { path: "products", element: <AdminProducts /> },
