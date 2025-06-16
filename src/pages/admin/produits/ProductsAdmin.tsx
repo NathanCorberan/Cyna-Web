@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import { useState } from "react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -20,7 +20,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Search, Plus, Edit, Trash2, Filter, ArrowUpDown, Eye } from "lucide-react"
+import { Search, Plus, Edit, Trash2, Filter, ArrowUpDown } from "lucide-react"
 import { Link } from "react-router-dom"
 import { useAllProducts } from "@/hooks/products/useAllProducts" 
 import type { Product } from "@/types/Product"
@@ -47,7 +47,7 @@ export default function ProductsAdmin() {
     setShowDeleteDialog(true)
   }
     
-  const { remove, loading: deleteLoading, error: deleteError } = useDeleteProduct()
+  const { remove, loading: deleteLoading} = useDeleteProduct()
 
   const confirmDelete = async () => {
     if (productToDelete === null) return;
