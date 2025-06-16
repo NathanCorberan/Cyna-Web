@@ -5,3 +5,20 @@ export interface User {
   last_name: string;
   roles: string[];
 }
+
+export interface UserAdminResponse {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  status: string;
+  orders: number;
+}
+
+export interface UserAdmin {
+  "@context": string;
+  "@id": string;
+  "@type": string;
+  totalItems: number;
+  member: UserAdminResponse[];
+}
