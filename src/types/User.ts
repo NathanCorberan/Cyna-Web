@@ -10,7 +10,7 @@ export interface UserAdminResponse {
   id: number;
   name: string;
   email: string;
-  role: string;
+  role: "admin" | "manager" | "customer" | "client" | "user";
   status: string;
   orders: number;
 }

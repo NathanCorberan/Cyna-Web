@@ -64,11 +64,15 @@ export function UsersPage() {
       case "manager":
         return <Badge className="bg-blue-500">Manager</Badge>;
       case "customer":
-        return <Badge className="bg-gray-500">Client</Badge>;
+      case "client":
+        return <Badge className="bg-sky-500">Client</Badge>;
+      case "user":
+        return <Badge className="bg-orange-500">Utilisateur</Badge>;
       default:
         return <Badge className="bg-gray-500">Inconnu</Badge>;
     }
   };
+
 
   return (
     <div className="space-y-6">
@@ -99,7 +103,8 @@ export function UsersPage() {
               <SelectItem value="all">Tous les rôles</SelectItem>
               <SelectItem value="admin">Admin</SelectItem>
               <SelectItem value="manager">Manager</SelectItem>
-              <SelectItem value="customer">Client</SelectItem>
+              <SelectItem value="client">Client</SelectItem>
+              <SelectItem value="user">Utilisateur</SelectItem>
             </SelectContent>
           </Select>
         </div>
