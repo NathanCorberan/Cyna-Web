@@ -22,8 +22,13 @@ const SUBS_TYPES = ["monthly", "yearly", "lifetime"]
 
 export default function NewProductPage() {
   const { id: productIdParam } = useParams<{ id?: string }>()
-  const productId = productIdParam ? Number(productIdParam) : null
-  const { product, loading: loadingProduct, error: errorProduct } = useProductById(productId || 0)
+  const productId = productIdParam && !isNaN(Number(productIdParam)) ? Number(productIdParam) : null
+
+  const productQuery = productId !== null ? useProductById(productId) : null
+  const product = productQuery?.product
+  const loadingProduct = productQuery?.loading ?? false
+  const errorProduct = productQuery?.error ?? null
+
 
   const { categories, loading: loadingCategories, error: errorCategories } = useCategories()
 

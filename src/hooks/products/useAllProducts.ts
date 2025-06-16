@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { fetchAllProducts } from "@/features/products/api/fetchAllProducts";
 import type { Product } from "@/types/Product";
 
@@ -7,23 +7,18 @@ export function useAllProducts() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    let isMounted = true;
+  const load = useCallback(() => {
     setLoading(true);
+    setError(null);
     fetchAllProducts()
-      .then((data) => {
-        if (isMounted) setProducts(data);
-      })
-      .catch((e) => {
-        if (isMounted) setError(e.message);
-      })
-      .finally(() => {
-        if (isMounted) setLoading(false);
-      });
-    return () => {
-      isMounted = false;
-    };
+      .then((data) => setProducts(data))
+      .catch((e) => setError(e.message))
+      .finally(() => setLoading(false));
   }, []);
 
-  return { products, loading, error };
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  return { products, loading, error, refetch: load };
 }

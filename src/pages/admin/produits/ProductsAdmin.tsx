@@ -1,10 +1,10 @@
 import React, { useState } from "react"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../components/ui/table"
-import { Button } from "../../../components/ui/button"
-import { Input } from "../../../components/ui/input"
-import { Badge } from "../../../components/ui/badge"
-import { Card } from "../../../components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../components/ui/select"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Badge } from "@/components/ui/badge"
+import { Card } from "@/components/ui/card"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import {
   Dialog,
   DialogContent,
@@ -12,18 +12,19 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "../../../components/ui/dialog"
+} from "@/components/ui/dialog"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "../../../components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu"
 import { Search, Plus, Edit, Trash2, Filter, ArrowUpDown, Eye } from "lucide-react"
 import { Link } from "react-router-dom"
-import { useAllProducts } from "../../../hooks/products/useAllProducts" // ← ton hook
-import type { Product } from "../../../types/Product"
+import { useAllProducts } from "@/hooks/products/useAllProducts" 
+import type { Product } from "@/types/Product"
+import { useDeleteProduct } from "@/hooks/products/useDeleteProduct"
 
 export default function ProductsAdmin() {
   const [searchQuery, setSearchQuery] = useState("")
@@ -32,7 +33,7 @@ export default function ProductsAdmin() {
   const [productToDelete, setProductToDelete] = useState<number | null>(null)
 
   // Récupère les produits via le hook
-  const { products, loading, error } = useAllProducts()
+  const { products, loading, error, refetch } = useAllProducts();
 
   const filteredProducts = products.filter((product: Product) => {
     const name = product.productLangages.find((l) => l.code === "FR")?.name || ""
@@ -45,12 +46,20 @@ export default function ProductsAdmin() {
     setProductToDelete(id)
     setShowDeleteDialog(true)
   }
+    
+  const { remove, loading: deleteLoading, error: deleteError } = useDeleteProduct()
 
-  const confirmDelete = () => {
-    // Suppression réelle à faire ici
-    setShowDeleteDialog(false)
-    setProductToDelete(null)
-  }
+  const confirmDelete = async () => {
+    if (productToDelete === null) return;
+    try {
+      await remove(productToDelete);
+      await refetch();
+      setShowDeleteDialog(false);
+      setProductToDelete(null);
+    } catch (e) {
+      console.error("Erreur suppression :", e);
+    }
+  };
 
   const getStatusBadge = (stock: number) => {
     if (stock > 10) {
@@ -135,7 +144,7 @@ const PRODUITS_IMAGE_BASE = "http://srv839278.hstgr.cloud:8000/assets/images/pro
               </TableHeader>
               <TableBody>
                 {filteredProducts.map((product: Product) => {
-                  const productName = product.productLangages.find((l) => l.code === "FR")?.name || "Sans nom"
+                  const productName = product.productLangages.find((l) => l.code === "fr")?.name || "Sans nom"
                   const image = product.productImages[0]?.image_link
                   return (
                     <TableRow key={product.id}>
@@ -231,7 +240,7 @@ const PRODUITS_IMAGE_BASE = "http://srv839278.hstgr.cloud:8000/assets/images/pro
       </Card>
 
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <DialogContent>
+        <DialogContent className="bg-white shadow-xl rounded-xl">
           <DialogHeader>
             <DialogTitle>Confirmer la suppression</DialogTitle>
             <DialogDescription>
@@ -242,8 +251,8 @@ const PRODUITS_IMAGE_BASE = "http://srv839278.hstgr.cloud:8000/assets/images/pro
             <Button variant="outline" onClick={() => setShowDeleteDialog(false)}>
               Annuler
             </Button>
-            <Button variant="destructive" onClick={confirmDelete}>
-              Supprimer
+            <Button variant="destructive" onClick={confirmDelete} disabled={deleteLoading}>
+              {deleteLoading ? "Suppression…" : "Supprimer"}
             </Button>
           </DialogFooter>
         </DialogContent>

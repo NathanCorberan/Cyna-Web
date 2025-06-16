@@ -103,7 +103,7 @@ export const routes: RouteObject[] = [
         element: <NewProductPage />
       },
       {
-        path: "/admin/produits/:id",
+        path: "produits/:id",
         element: <NewProductPage />
       },
       
