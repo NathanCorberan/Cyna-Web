@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next";
 import type { Product, ProductLangage, SubscriptionType } from "@/types/Product";
 
 const PRODUITS_IMAGE_BASE = "http://srv839278.hstgr.cloud:8000/assets/images/products/";
+const CAROUSEL_IMAGE_BASE = "http://srv839278.hstgr.cloud:8000/assets/images/carousel/";
 
 function ProductCard({ product }: { product: Product }) {
   const { language } = useLanguage();
@@ -123,7 +124,7 @@ export const Home = () => {
         ) : panelsCount > 0 ? (
           <>
             <img
-              src={currentCarousel?.image_link || placeholder}
+              src={CAROUSEL_IMAGE_BASE + currentCarousel?.image_link || placeholder}
               alt={langCarousel?.title || t("home.carousel.titleUnavailable")}
               className="object-cover w-full h-full"
             />

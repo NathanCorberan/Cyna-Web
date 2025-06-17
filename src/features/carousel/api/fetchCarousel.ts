@@ -1,4 +1,3 @@
-// File: src/features/carousels/api/fetchCarousels.ts
 import type { CarouselApiResponse, Carousel } from '@/types/Carousel';
 
 const API_URL = import.meta.env.VITE_API_URL + 'carousels';

@@ -22,6 +22,8 @@ import ProductsAdmin from "@/pages/admin/produits/ProductsAdmin";
 import NewProductPage from "@/pages/admin/produits/NewProductPage"
 import OrdersPage from "@/pages/admin/orders/OrdersPage";
 import { UsersPage } from "@/pages/admin/users/UsersPage";
+import AdminCarousel from "@/pages/admin/carousel/CarouselAdmin";
+import NewCarouselSlidePage  from "@/pages/admin/carousel/NewCarouselAdmin";
 
 export const routes: RouteObject[] = [
   {
@@ -115,6 +117,14 @@ export const routes: RouteObject[] = [
       {
         path: "users",
         element: <UsersPage />
+      },
+      {
+        path: "carousel",
+        element: <AdminCarousel />
+      },
+      {
+        path: "carousel/new",
+        element: <NewCarouselSlidePage />
       }
 
       

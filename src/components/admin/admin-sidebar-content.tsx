@@ -27,9 +27,8 @@ export default function AdminSidebarContent({ isCollapsed = false }: AdminSideba
     { to: "/admin/produits", label: "Produits", icon: ShoppingBag },
     { to: "/admin/orders", label: "Commandes", icon: ShoppingCart },
     { to: "/admin/users", label: "Utilisateurs", icon: Users },
-    { to: "/admin/news", label: "Nouveautées", icon: Newspaper },
     { to: "/admin/carousel", label: "Carousel", icon: Film },
-    { to: "/admin/settings", label: "Paramètres", icon: Settings },
+    { to: "/admin/news", label: "Nouveautées", icon: Newspaper },
   ]
 
   return (
