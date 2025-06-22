@@ -1,6 +1,6 @@
 # nathancorberan-cyna-web
 
-**nathancorberan-cyna-web** est une application web e-commerce moderne développée avec **React**, **Vite.js** et **Tailwind CSS v4**.  
+**nathancorberan-cyna-web** est une application web e-commerce moderne développée avec **React**, **TypeScript**, **Vite.js** et **Tailwind CSS v4**.  
 Elle propose la vente d’abonnements SaaS de sécurité pour l’entreprise Cyna, avec une expérience utilisateur optimisée, responsive et sécurisée.
 
 ## Prérequis
